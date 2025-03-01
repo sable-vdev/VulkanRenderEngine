@@ -12,7 +12,8 @@
 class VulkanApp
 {
 private:
-	VkDevice device = nullptr;
+	VkDevice mDevice = nullptr;
+	VkQueue mGraphicsQueue = nullptr;
 	VkPhysicalDevice mPhysicalDevice = nullptr;
 	VulkanAppDebugger mDebugger;
 	GLFWwindow* mWindow = nullptr;
