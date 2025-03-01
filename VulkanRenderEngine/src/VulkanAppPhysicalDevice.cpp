@@ -2,7 +2,11 @@
 
 const bool userSelectDevice = false;
 
-VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance)
+const std::vector<const char*> deviceExtensions = {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance, VkSurfaceKHR surface)
 {
 	VkPhysicalDevice physicalDevice = nullptr;
 	uint32_t deviceCount = 0;
@@ -15,11 +19,11 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance
 
 	if (userSelectDevice)
 	{
-		physicalDevice = UserSelectGPU(devices, &deviceCount);
+		physicalDevice = UserSelectGPU(devices, &deviceCount, surface);
 	}
 	else
 	{
-		physicalDevice = GetBestGPU(devices);
+		physicalDevice = GetBestGPU(devices, surface);
 		std::cout << "Using: " << GetVulkanDeviceInfo(physicalDevice) << '\n';
 	}
 
@@ -28,15 +32,15 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance
 	return physicalDevice;
 }
 
-VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevice> devices)
+VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevice> devices, VkSurfaceKHR surface)
 {
 	int deviceRank = 0;
 	std::multimap<int, VkPhysicalDevice> vulkanDevices;
 
 	for (const auto& device : devices)
 	{
-		VulkanAppQueueFamilies family = family.FindQueueFamilies(device);
-
+		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
+		bool extensionSupported = CheckDeviceExtensionSupport(device);
 		if (family.IsComplete())
 		{
 			int score = CalculateDeviceScore(device);
@@ -44,7 +48,7 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevic
 		}
 	}
 
-	if (vulkanDevices.rbegin()->first > 0)
+	if (!vulkanDevices.empty() && vulkanDevices.rbegin()->first > 0)
 	{
 		return vulkanDevices.rbegin()->second;
 	}
@@ -52,14 +56,32 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevic
 
 }
 
-VkPhysicalDevice VulkanAppPhysicalDevice::UserSelectGPU(std::vector<VkPhysicalDevice> devices, uint32_t* deviceCount)
+bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
+{
+	uint32_t extensionCount;
+	vkEnumerateDeviceExtensionProperties(vkpd, nullptr, &extensionCount, nullptr);
+
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(vkpd, nullptr, &extensionCount, availableExtensions.data());
+
+	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+	for (const auto& extension : availableExtensions)
+	{
+		requiredExtensions.erase(extension.extensionName);
+	}
+
+	return requiredExtensions.empty();
+}
+
+VkPhysicalDevice VulkanAppPhysicalDevice::UserSelectGPU(std::vector<VkPhysicalDevice> devices, uint32_t* deviceCount, VkSurfaceKHR surface)
 {
 	int deviceNumber = 0;
 	std::map<int, VkPhysicalDevice> vulkanDevices;
 
 	for (const auto& device : devices)
 	{
-		VulkanAppQueueFamilies family = family.FindQueueFamilies(device);
+		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
 		if (family.IsComplete())
 		{
 			std::cout << GetVulkanDeviceInfo(device) << " at index: " << deviceNumber << '\n';

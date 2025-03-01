@@ -64,6 +64,7 @@ void VulkanApp::InitVulkan()
 {
 	CreateVulkanInstance();
 	SetupDebugMessenger();
+	CreateSurfaceGLFW();
 	GetPhysicalDevices();
 	CreateLogicalDevice();
 }
@@ -88,7 +89,7 @@ void VulkanApp::CleanUp()
 	}
 
 	vkDestroyDevice(mDevice, nullptr);
-
+	vkDestroySurfaceKHR(mInstance, mSurfaceKHR, nullptr);
 	vkDestroyInstance(mInstance, nullptr);
 
 	glfwDestroyWindow(mWindow);
@@ -154,29 +155,36 @@ void VulkanApp::GetPhysicalDevices()
 {
 	VulkanAppPhysicalDevice vkapd;
 
-	mPhysicalDevice = vkapd.GetPhysicalDevices(mInstance);
+	mPhysicalDevice = vkapd.GetPhysicalDevices(mInstance, mSurfaceKHR);
 	
 	glfwShowWindow(mWindow);
 }
 
 void VulkanApp::CreateLogicalDevice()
 {
-	VulkanAppQueueFamilies family = family.FindQueueFamilies(mPhysicalDevice);
+	VulkanAppQueueFamilies family = family.FindQueueFamilies(mPhysicalDevice, mSurfaceKHR);
 
-	VkDeviceQueueCreateInfo queueCreateInfo{};
-	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = family.graphicsFamily.value();
-	queueCreateInfo.queueCount = 1;
-
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos{};
+	std::set<uint32_t> uniqueQueueFamilies = { family.graphicsFamily.value(), family.presentFamily.value() };
+	
 	float queuePriority = 1.0f;
-	queueCreateInfo.pQueuePriorities = &queuePriority;
+
+	for (uint32_t queueFamily : uniqueQueueFamilies)
+	{
+		VkDeviceQueueCreateInfo queueCreateInfo{};
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount = 1;
+		queueCreateInfo.pQueuePriorities = &queuePriority;
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
 	VkPhysicalDeviceFeatures deviceFeatures{};
 
 	VkDeviceCreateInfo deviceCreateInfo{};
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
-	deviceCreateInfo.queueCreateInfoCount = 1;
+	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
+	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 
 	deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
 
@@ -195,6 +203,7 @@ void VulkanApp::CreateLogicalDevice()
 	}
 
 	vkGetDeviceQueue(mDevice, family.graphicsFamily.value(), 0, &mGraphicsQueue);
+	vkGetDeviceQueue(mDevice, family.presentFamily.value(), 0, &mPresentQueue);
 }
 
 std::vector<const char*> VulkanApp::GetRequiredExtensions()
@@ -225,5 +234,13 @@ void VulkanApp::SetupDebugMessenger()
 	if (mDebugger.CreateDebugUtilsMessengerEXT(mInstance, &createInfo, nullptr, &mDebugMessenger) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to setup debug messenger!");
+	}
+}
+
+void VulkanApp::CreateSurfaceGLFW()
+{
+	if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &mSurfaceKHR) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create window surface");
 	}
 }
