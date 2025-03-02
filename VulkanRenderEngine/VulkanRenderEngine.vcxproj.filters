@@ -41,5 +41,8 @@
     <ClInclude Include="src\VulkanAppQueueFamilies.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\VulkanAppSwapChain.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

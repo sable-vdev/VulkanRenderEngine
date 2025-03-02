@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include "VulkanAppSwapChain.hpp"
 #include "VulkanAppQueueFamilies.hpp"
 
 class VulkanAppPhysicalDevice

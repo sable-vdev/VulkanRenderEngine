@@ -41,10 +41,16 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevic
 	{
 		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
 		bool extensionSupported = CheckDeviceExtensionSupport(device);
-		if (family.IsComplete())
+
+		if (extensionSupported)
 		{
-			int score = CalculateDeviceScore(device);
-			vulkanDevices.insert(std::make_pair(score, device));
+			SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(device, surface);
+			if (!swapChainDetails.formats.empty() && !swapChainDetails.presentMode.empty())
+			{
+				int score = CalculateDeviceScore(device);
+				vulkanDevices.insert(std::make_pair(score, device));
+			}
+			
 		}
 	}
 
