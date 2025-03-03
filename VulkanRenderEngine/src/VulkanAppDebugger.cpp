@@ -1,8 +1,9 @@
 #include "VulkanAppDebugger.hpp"
 
+
 void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 {
-	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+	PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != nullptr)
 	{
 		func(instance, debugMessenger, pAllocator);
@@ -11,7 +12,7 @@ void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDeb
 
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanAppDebugger::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
-	LogLevel log = WARNING;
+	LogLevel log = VERBOSE;
 	switch (messageSeverity)
 	{
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
@@ -31,7 +32,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanAppDebugger::DebugCallback(VkDebugUtilsMess
 			std::cerr << "[ERROR] " << '\t' << pCallbackData->pMessage << '\n';
 		break;
 	}
-
 	return VK_FALSE;
 }
 
