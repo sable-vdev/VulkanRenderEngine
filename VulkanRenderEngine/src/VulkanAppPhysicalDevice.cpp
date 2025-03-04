@@ -41,7 +41,6 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevic
 				int score = CalculateDeviceScore(device);
 				vulkanDevices.insert(std::make_pair(score, device));
 			}
-			
 		}
 	}
 
