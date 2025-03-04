@@ -15,8 +15,7 @@ class VulkanAppPhysicalDevice
 public:
 	VkPhysicalDevice GetPhysicalDevices(VkInstance instance, VkSurfaceKHR surface);
 private:
-	VkPhysicalDevice UserSelectGPU(std::vector<VkPhysicalDevice> devices, uint32_t* deviceCount, VkSurfaceKHR surface);
-	VkPhysicalDevice GetBestGPU(std::vector<VkPhysicalDevice> devices, VkSurfaceKHR surface);
+	VkPhysicalDevice GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice vkpd);
 	std::string GetVulkanDeviceInfo(VkPhysicalDevice vkpd);
 	int CalculateDeviceScore(VkPhysicalDevice vkpd);

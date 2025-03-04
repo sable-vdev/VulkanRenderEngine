@@ -23,7 +23,7 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance
 	return physicalDevice;
 }
 
-VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevice> devices, VkSurfaceKHR surface)
+VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface)
 {
 	int deviceRank = 0;
 	std::multimap<int, VkPhysicalDevice> vulkanDevices;
@@ -31,9 +31,8 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevic
 	for (const auto& device : devices)
 	{
 		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
-		bool extensionSupported = CheckDeviceExtensionSupport(device);
 
-		if (extensionSupported)
+		if (CheckDeviceExtensionSupport(device))
 		{
 			SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(device, surface);
 			if (!swapChainDetails.formats.empty() && !swapChainDetails.presentMode.empty())
