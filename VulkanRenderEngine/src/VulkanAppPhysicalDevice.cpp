@@ -1,7 +1,5 @@
 #include "VulkanAppPhysicalDevice.hpp"
 
-const bool userSelectDevice = false;
-
 const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
@@ -17,15 +15,8 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance
 
 	if (deviceCount <= 0) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
 
-	if (userSelectDevice)
-	{
-		physicalDevice = UserSelectGPU(devices, &deviceCount, surface);
-	}
-	else
-	{
-		physicalDevice = GetBestGPU(devices, surface);
-		std::cout << "Using: " << GetVulkanDeviceInfo(physicalDevice) << '\n';
-	}
+	physicalDevice = GetBestGPU(devices, surface);
+	std::cout << "Using: " << GetVulkanDeviceInfo(physicalDevice) << '\n';
 
 	if (physicalDevice == nullptr) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
 
@@ -59,7 +50,6 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(std::vector<VkPhysicalDevic
 		return vulkanDevices.rbegin()->second;
 	}
 	else throw std::runtime_error("Failed to find suitable GPU");
-
 }
 
 bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
@@ -78,31 +68,6 @@ bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
 	}
 
 	return requiredExtensions.empty();
-}
-
-VkPhysicalDevice VulkanAppPhysicalDevice::UserSelectGPU(std::vector<VkPhysicalDevice> devices, uint32_t* deviceCount, VkSurfaceKHR surface)
-{
-	int deviceNumber = 0;
-	std::map<int, VkPhysicalDevice> vulkanDevices;
-
-	for (const auto& device : devices)
-	{
-		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
-		if (family.IsComplete())
-		{
-			std::cout << GetVulkanDeviceInfo(device) << " at index: " << deviceNumber << '\n';
-			vulkanDevices.insert(std::make_pair(deviceNumber, device));
-			deviceNumber++;
-		}
-	}
-
-	std::cout << "Choose the GPU you want to use:\n";
-	uint8_t input;
-	std::cin >> input;
-
-	if (input >= *deviceCount) throw std::runtime_error("You selected a wrong index");
-
-	return vulkanDevices.at(input);
 }
 
 std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice device)
