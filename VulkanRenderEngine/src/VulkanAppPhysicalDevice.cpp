@@ -1,9 +1,5 @@
 #include "VulkanAppPhysicalDevice.hpp"
 
-const std::vector<const char*> deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
-
 VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance, VkSurfaceKHR surface)
 {
 	VkPhysicalDevice physicalDevice = nullptr;
@@ -14,7 +10,6 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance
 	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
 	if (deviceCount <= 0) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
-
 	physicalDevice = GetBestGPU(devices, surface);
 	std::cout << "Using: " << GetVulkanDeviceInfo(physicalDevice) << '\n';
 
@@ -28,10 +23,10 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysica
 	int deviceRank = 0;
 	std::multimap<int, VkPhysicalDevice> vulkanDevices;
 
+		
 	for (const auto& device : devices)
 	{
 		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
-
 		if (CheckDeviceExtensionSupport(device))
 		{
 			SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(device, surface);

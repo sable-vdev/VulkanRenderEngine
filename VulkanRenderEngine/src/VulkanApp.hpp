@@ -10,6 +10,9 @@
 #include "VulkanAppDebugger.hpp"
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppQueueFamilies.hpp"
+#include "VulkanAppSwapChain.hpp"
+
+
 
 class VulkanApp
 {
@@ -25,6 +28,7 @@ private:
 	const uint32_t HEIGHT = 720;
 	VkDebugUtilsMessengerEXT mDebugMessenger = nullptr;
 	VkSurfaceKHR mSurfaceKHR = nullptr;
+	VkSwapchainKHR mSwapChain = nullptr;
 public:
 	void Run();
 private:
@@ -38,5 +42,6 @@ private:
 	std::vector<const char*> GetRequiredExtensions();
 	void SetupDebugMessenger();
 	void CreateSurfaceGLFW(); //Implementation can be made platform specific without glfw using win32api
+	void CreateSwapChain();
 };
 

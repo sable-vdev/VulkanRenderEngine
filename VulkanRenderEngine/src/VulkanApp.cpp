@@ -67,6 +67,7 @@ void VulkanApp::InitVulkan()
 	CreateSurfaceGLFW();
 	GetPhysicalDevices();
 	CreateLogicalDevice();
+	CreateSwapChain();
 }
 /*
 * Main loop of the application for rendering and window
@@ -83,13 +84,17 @@ void VulkanApp::MainLoop()
 */
 void VulkanApp::CleanUp()
 {
+	vkDestroySwapchainKHR(mDevice, mSwapChain, nullptr);
+
+	vkDestroyDevice(mDevice, nullptr);
+
 	if (enableValidationLayers)
 	{
 		mDebugger.DestroyDebugUtilsMessengerEXT(mInstance, mDebugMessenger, nullptr);
 	}
 
-	vkDestroyDevice(mDevice, nullptr);
 	vkDestroySurfaceKHR(mInstance, mSurfaceKHR, nullptr);
+
 	vkDestroyInstance(mInstance, nullptr);
 
 	glfwDestroyWindow(mWindow);
@@ -185,10 +190,9 @@ void VulkanApp::CreateLogicalDevice()
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
 	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-
 	deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
-
-	deviceCreateInfo.enabledExtensionCount = 0;
+	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+	deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 	if (enableValidationLayers)
 	{
@@ -242,5 +246,58 @@ void VulkanApp::CreateSurfaceGLFW()
 	if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &mSurfaceKHR) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create window surface");
+	}
+}
+
+void VulkanApp::CreateSwapChain()
+{
+	SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(mPhysicalDevice, mSurfaceKHR);
+
+	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainDetails.formats);
+	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainDetails.presentMode);
+	VkExtent2D extent = ChooseSwapExtent(swapChainDetails.capabilities, mWindow);
+
+	uint32_t imageCount = swapChainDetails.capabilities.minImageCount + 1;
+
+	if (swapChainDetails.capabilities.maxImageCount > 0 && imageCount > swapChainDetails.capabilities.maxImageCount)
+	{
+		imageCount = swapChainDetails.capabilities.maxImageCount;
+	}
+
+	VkSwapchainCreateInfoKHR createInfo{};
+	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	createInfo.surface = mSurfaceKHR;
+	createInfo.minImageCount = imageCount;
+	createInfo.imageColorSpace = surfaceFormat.colorSpace;
+	createInfo.imageFormat = surfaceFormat.format;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+	VulkanAppQueueFamilies families = families.FindQueueFamilies(mPhysicalDevice, mSurfaceKHR);
+	uint32_t queueFamilyIndices[] = { families.graphicsFamily.value(), families.presentFamily.value() };
+
+	if (families.graphicsFamily != families.presentFamily)
+	{
+		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		createInfo.queueFamilyIndexCount = 2;
+		createInfo.pQueueFamilyIndices = queueFamilyIndices;
+	}
+	else
+	{
+		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		createInfo.queueFamilyIndexCount = 0;
+		createInfo.pQueueFamilyIndices = nullptr;
+	}
+
+	createInfo.preTransform = swapChainDetails.capabilities.currentTransform;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	createInfo.presentMode = presentMode;
+	createInfo.clipped = VK_TRUE;
+	createInfo.oldSwapchain = nullptr;
+
+	if (vkCreateSwapchainKHR(mDevice, &createInfo, nullptr, &mSwapChain) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create swap chain");
 	}
 }

@@ -10,6 +10,10 @@
 #include "VulkanAppSwapChain.hpp"
 #include "VulkanAppQueueFamilies.hpp"
 
+const std::vector<const char*> deviceExtensions = {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 class VulkanAppPhysicalDevice
 {
 public:
@@ -20,4 +24,3 @@ private:
 	std::string GetVulkanDeviceInfo(VkPhysicalDevice vkpd);
 	int CalculateDeviceScore(VkPhysicalDevice vkpd);
 };
-
