@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <cstring>
 #include "VulkanAppDebugger.hpp"
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppQueueFamilies.hpp"
