@@ -10,6 +10,12 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentMode;
 };
 
+class VulkanAppSwapChain
+{
+public:
+
+};
+
 inline SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice vkpd, VkSurfaceKHR surface)
 {
 	SwapChainSupportDetails details;

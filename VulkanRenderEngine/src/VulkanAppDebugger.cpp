@@ -1,12 +1,21 @@
 #include "VulkanAppDebugger.hpp"
 
-
-void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+/*
+void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator = nullptr)
 {
 	PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != nullptr)
 	{
 		func(instance, debugMessenger, pAllocator);
+	}
+}
+*/
+void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
+{
+	PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT");
+	if (func != nullptr)
+	{
+		func(mInstance, mDebugMessenger, pAllocator);
 	}
 }
 
@@ -53,4 +62,19 @@ void VulkanAppDebugger::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCr
 	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	createInfo.pfnUserCallback = DebugCallback;
 	createInfo.pUserData = nullptr;
+}
+
+VulkanAppDebugger::VulkanAppDebugger(VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT createInfo)
+{
+	mInstance = instance;
+	PopulateDebugMessengerCreateInfo(createInfo);
+
+	if(CreateDebugUtilsMessengerEXT(mInstance, &createInfo, nullptr, &mDebugMessenger) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to setup debug messenger!");
+	}
+}
+
+VulkanAppDebugger::VulkanAppDebugger()
+{
 }

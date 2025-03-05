@@ -1,6 +1,6 @@
 #include "VulkanAppPhysicalDevice.hpp"
-
-VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance, VkSurfaceKHR surface)
+/*
+VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 {
 	VkPhysicalDevice physicalDevice = nullptr;
 	uint32_t deviceCount = 0;
@@ -16,6 +16,25 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetPhysicalDevices(VkInstance instance
 	if (physicalDevice == nullptr) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
 
 	return physicalDevice;
+}
+*/
+
+void VulkanAppPhysicalDevice::GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
+{
+	VkPhysicalDevice physicalDevice = nullptr;
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+	if (deviceCount <= 0) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
+	physicalDevice = GetBestGPU(devices, surface);
+	std::cout << "Using: " << GetVulkanDeviceInfo(physicalDevice) << '\n';
+
+	if (physicalDevice == nullptr) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
+
+	vulkanAppPhysicalDevice = physicalDevice;
 }
 
 VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface)

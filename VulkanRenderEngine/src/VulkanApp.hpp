@@ -9,7 +9,7 @@
 #include <cstring>
 #include "VulkanAppDebugger.hpp"
 #include "VulkanAppPhysicalDevice.hpp"
-#include "VulkanAppQueueFamilies.hpp"
+#include "VulkanAppLogicalDevice.hpp"
 #include "VulkanAppSwapChain.hpp"
 
 
@@ -17,18 +17,23 @@
 class VulkanApp
 {
 private:
-	VkDevice mDevice = nullptr;
-	VkQueue mGraphicsQueue = nullptr;
-	VkQueue mPresentQueue = nullptr;
-	VkPhysicalDevice mPhysicalDevice = nullptr;
+	//VkDevice mDevice = nullptr;
+	//VkQueue mGraphicsQueue = nullptr;
+	//VkQueue mPresentQueue = nullptr;
+	VulkanAppLogicalDevice mVulkanAppLogicalDevice;
+	//VkPhysicalDevice mPhysicalDevice = nullptr;
+	VulkanAppPhysicalDevice mVulkanAppPhysicalDevice;
 	VulkanAppDebugger mDebugger;
 	GLFWwindow* mWindow = nullptr;
 	VkInstance mInstance = nullptr;
 	const uint32_t WIDTH = 1280;
 	const uint32_t HEIGHT = 720;
-	VkDebugUtilsMessengerEXT mDebugMessenger = nullptr;
+	//VkDebugUtilsMessengerEXT mDebugMessenger = nullptr;
 	VkSurfaceKHR mSurfaceKHR = nullptr;
 	VkSwapchainKHR mSwapChain = nullptr;
+	std::vector<VkImage> mSwapChainImages;
+	VkFormat mSwapChainImageFormat;
+	VkExtent2D mSwapChainExtent;
 public:
 	void Run();
 private:
@@ -37,7 +42,7 @@ private:
 	void MainLoop();
 	void CleanUp();
 	void CreateVulkanInstance();
-	void GetPhysicalDevices();
+	//void GetPhysicalDevices();
 	void CreateLogicalDevice();
 	std::vector<const char*> GetRequiredExtensions();
 	void SetupDebugMessenger();

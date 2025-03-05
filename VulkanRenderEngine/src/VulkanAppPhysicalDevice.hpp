@@ -17,7 +17,9 @@ const std::vector<const char*> deviceExtensions = {
 class VulkanAppPhysicalDevice
 {
 public:
-	VkPhysicalDevice GetPhysicalDevices(VkInstance instance, VkSurfaceKHR surface);
+	VkPhysicalDevice vulkanAppPhysicalDevice;
+	//VkPhysicalDevice GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface);
+	void GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface);
 private:
 	VkPhysicalDevice GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface);
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice vkpd);
