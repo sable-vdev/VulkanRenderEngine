@@ -1,11 +1,17 @@
 #pragma once
+#define GLFW_INCLUDE_VULKAN
+#include "GLFW/glfw3.h"
+#include "VulkanAppQueueFamilies.hpp"
+#include <stdexcept>
 #include <vector>
 #include <limits>
 #include <algorithm>
 
+#include <iostream>
+
 struct SwapChainSupportDetails
 {
-	VkSurfaceCapabilitiesKHR capabilities;
+	VkSurfaceCapabilitiesKHR capabilities = {0};
 	std::vector<VkSurfaceFormatKHR> formats;
 	std::vector<VkPresentModeKHR> presentMode;
 };
@@ -13,9 +19,21 @@ struct SwapChainSupportDetails
 class VulkanAppSwapChain
 {
 public:
+	VkSwapchainKHR swapChain = nullptr;
+	std::vector<VkImage> swapChainImages;
+	VkFormat swapChainImageFormat;
+	VkExtent2D swapChainExtent;
 
+public:
+	void CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vkpd, VkDevice& device, VkSurfaceKHR& surface);
+	void DestroySwapChain(VkDevice device, const VkAllocationCallbacks* pAllocator);
+	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice vkpd, VkSurfaceKHR surface);
+private:
+	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);
+	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, GLFWwindow* window);
 };
-
+/*
 inline SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice vkpd, VkSurfaceKHR surface)
 {
 	SwapChainSupportDetails details;
@@ -88,3 +106,4 @@ inline VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
 		return actualExtent;
 	}
 }
+*/

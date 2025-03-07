@@ -1,7 +1,6 @@
 #pragma once
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
-
 #include <stdexcept>
 #include <vector>
 #include <set>
@@ -11,8 +10,6 @@
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppLogicalDevice.hpp"
 #include "VulkanAppSwapChain.hpp"
-
-
 
 class VulkanApp
 {
@@ -30,10 +27,11 @@ private:
 	const uint32_t HEIGHT = 720;
 	//VkDebugUtilsMessengerEXT mDebugMessenger = nullptr;
 	VkSurfaceKHR mSurfaceKHR = nullptr;
-	VkSwapchainKHR mSwapChain = nullptr;
-	std::vector<VkImage> mSwapChainImages;
-	VkFormat mSwapChainImageFormat;
-	VkExtent2D mSwapChainExtent;
+	//VkSwapchainKHR mSwapChain = nullptr;
+	//std::vector<VkImage> mSwapChainImages;
+	//VkFormat mSwapChainImageFormat;
+	//VkExtent2D mSwapChainExtent;
+	VulkanAppSwapChain mVulkanAppSwapChain;
 public:
 	void Run();
 private:

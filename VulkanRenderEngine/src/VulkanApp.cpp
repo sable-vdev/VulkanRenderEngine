@@ -98,8 +98,8 @@ void VulkanApp::MainLoop()
 */
 void VulkanApp::CleanUp()
 {
-	vkDestroySwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, nullptr);
-
+	//vkDestroySwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, nullptr);
+	mVulkanAppSwapChain.DestroySwapChain(mVulkanAppLogicalDevice.vulkanDevice, nullptr);
 	//vkDestroyDevice(mVulkanAppLogicalDevice.vulkanDevice, nullptr);
 	mVulkanAppLogicalDevice.DestoryLogicalDevice();
 
@@ -286,6 +286,7 @@ void VulkanApp::CreateSurfaceGLFW()
 
 void VulkanApp::CreateSwapChain()
 {
+	/*
 	//SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(mPhysicalDevice, mSurfaceKHR);
 	SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mSurfaceKHR);
 
@@ -341,7 +342,7 @@ void VulkanApp::CreateSwapChain()
 	vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, nullptr);
 	mSwapChainImages.resize(imageCount);
 	vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, mSwapChainImages.data());
-	*/
+	//
 
 	if (vkCreateSwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, &createInfo, nullptr, &mSwapChain) != VK_SUCCESS)
 	{
@@ -354,4 +355,7 @@ void VulkanApp::CreateSwapChain()
 
 	mSwapChainImageFormat = surfaceFormat.format;
 	mSwapChainExtent = extent;
+	*/
+
+	mVulkanAppSwapChain.CreateSwapChain(mWindow, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mVulkanAppLogicalDevice.vulkanDevice, mSurfaceKHR);
 }
