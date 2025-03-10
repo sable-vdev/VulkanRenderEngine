@@ -106,6 +106,13 @@
     <ClInclude Include="src\VulkanAppLogicalDevice.hpp" />
     <ClInclude Include="src\VulkanAppImageView.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shadersrc\compile.bat" />
+    <None Include="shadersrc\frag.spv" />
+    <None Include="shadersrc\shader.vert" />
+    <None Include="shadersrc\shader.frag" />
+    <None Include="shadersrc\vert.spv" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

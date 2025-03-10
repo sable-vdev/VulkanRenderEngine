@@ -4,10 +4,10 @@
 #include <set>
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "VulkanAppDebugger.hpp"
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppLogicalDevice.hpp"
-//#include "VulkanAppSwapChain.hpp"
 #include "VulkanAppImageView.hpp"
 
 class VulkanApp
@@ -36,5 +36,25 @@ private:
 	void SetupDebugMessenger();
 	void CreateSurfaceGLFW(); //Implementation can be made platform specific without glfw using win32api
 	void CreateSwapChain();
+	void CreateGraphicsPipeline();
+	VkShaderModule CreateShaderModule(const std::vector<char>& code);
+
+	inline std::vector<char> ReadFile(const std::string& filename)
+	{
+		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+		if (!file.is_open())
+		{
+			throw std::runtime_error("Failed to open file");
+		}
+
+		size_t fileSize = static_cast<size_t>(file.tellg());
+		std::vector<char> buffer(fileSize);
+		file.seekg(0);
+		file.read(buffer.data(), fileSize);
+		file.close();
+
+		return buffer;
+	}
 };
 

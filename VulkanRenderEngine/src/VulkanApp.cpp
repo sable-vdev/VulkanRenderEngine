@@ -69,6 +69,7 @@ void VulkanApp::InitVulkan()
 	CreateLogicalDevice();
 	CreateSwapChain();
 	mVulkanAppImageView.CreateImageViews(mVulkanAppLogicalDevice.vulkanDevice, mVulkanAppSwapChain);
+	CreateGraphicsPipeline();
 }
 /*
 * Main loop of the application for rendering and window
@@ -146,6 +147,7 @@ void VulkanApp::CreateVulkanInstance()
 	* mandatory information of the Vulkan application
 	*/
 	VkInstanceCreateInfo createInfo{};
+
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 	
@@ -216,4 +218,57 @@ void VulkanApp::CreateSurfaceGLFW()
 void VulkanApp::CreateSwapChain()
 {
 	mVulkanAppSwapChain.CreateSwapChain(mWindow, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mVulkanAppLogicalDevice.vulkanDevice, mSurfaceKHR);
+}
+
+void VulkanApp::CreateGraphicsPipeline()
+{
+	auto vertShaderCode = ReadFile("shadersrc/vert.spv");
+	auto fragShaderCode = ReadFile("shadersrc/frag.spv");
+
+	VkShaderModule vertexModule = CreateShaderModule(vertShaderCode);
+	VkShaderModule fragmentModule = CreateShaderModule(fragShaderCode);
+
+	VkPipelineShaderStageCreateInfo vertShaderCreateInfo{
+		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		nullptr,
+		0,
+		VK_SHADER_STAGE_VERTEX_BIT,
+		vertexModule,
+		"main",
+		nullptr
+	};
+
+	VkPipelineShaderStageCreateInfo fragShaderCreateInfo{
+		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		nullptr,
+		0,
+		VK_SHADER_STAGE_FRAGMENT_BIT,
+		fragmentModule,
+		"main",
+		nullptr
+	};
+
+	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderCreateInfo, fragShaderCreateInfo };
+
+	vkDestroyShaderModule(mVulkanAppLogicalDevice.vulkanDevice, vertexModule, nullptr);
+	vkDestroyShaderModule(mVulkanAppLogicalDevice.vulkanDevice, fragmentModule, nullptr);
+}
+
+VkShaderModule VulkanApp::CreateShaderModule(const std::vector<char>& code)
+{
+	VkShaderModuleCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		nullptr,
+		0,
+		code.size(),
+		reinterpret_cast<const uint32_t*>(code.data())
+	};
+	VkShaderModule shaderModule;
+
+	if (vkCreateShaderModule(mVulkanAppLogicalDevice.vulkanDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create shader module");
+	}
+
+	return shaderModule;
 }
