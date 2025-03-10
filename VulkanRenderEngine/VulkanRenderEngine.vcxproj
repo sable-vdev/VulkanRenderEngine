@@ -94,6 +94,7 @@
     <ClCompile Include="src\VulkanAppPhysicalDevice.cpp" />
     <ClCompile Include="src\VulkanAppLogicalDevice.cpp" />
     <ClCompile Include="src\VulkanAppSwapChain.cpp" />
+    <ClCompile Include="src\VulkanAppImageView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VulkanAppDebugger.hpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="src\VulkanAppQueueFamilies.hpp" />
     <ClInclude Include="src\VulkanAppSwapChain.hpp" />
     <ClInclude Include="src\VulkanAppLogicalDevice.hpp" />
+    <ClInclude Include="src\VulkanAppImageView.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

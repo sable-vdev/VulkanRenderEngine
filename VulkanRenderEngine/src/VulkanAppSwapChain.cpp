@@ -68,8 +68,6 @@ void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vk
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
 	swapChainImages.resize(imageCount);
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
-	
-	std::cout << "swapchain created\n";
 }
 
 void VulkanAppSwapChain::DestroySwapChain(VkDevice device, const VkAllocationCallbacks* pAllocator)

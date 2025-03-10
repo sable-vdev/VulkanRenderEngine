@@ -1,6 +1,6 @@
 #include "VulkanApp.hpp"
 
-const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -35,7 +35,7 @@ bool CheckValidationLayerSupport()
 }
 
 /*
-* Vulkanapp init function handling the general entry point of the app
+* Vulkanapp init function handling the app
 */
 void VulkanApp::Run()
 {
@@ -68,6 +68,7 @@ void VulkanApp::InitVulkan()
 	mVulkanAppPhysicalDevice.GetPhysicalDevice(mInstance, mSurfaceKHR);
 	CreateLogicalDevice();
 	CreateSwapChain();
+	mVulkanAppImageView.CreateImageViews(mVulkanAppLogicalDevice.vulkanDevice, mVulkanAppSwapChain);
 }
 /*
 * Main loop of the application for rendering and window
@@ -98,6 +99,7 @@ void VulkanApp::MainLoop()
 */
 void VulkanApp::CleanUp()
 {
+	mVulkanAppImageView.DestroyImageViews(mVulkanAppLogicalDevice.vulkanDevice);
 	//vkDestroySwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, nullptr);
 	mVulkanAppSwapChain.DestroySwapChain(mVulkanAppLogicalDevice.vulkanDevice, nullptr);
 	//vkDestroyDevice(mVulkanAppLogicalDevice.vulkanDevice, nullptr);

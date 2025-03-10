@@ -10,6 +10,7 @@
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppLogicalDevice.hpp"
 #include "VulkanAppSwapChain.hpp"
+#include "VulkanAppImageView.hpp"
 
 class VulkanApp
 {
@@ -32,6 +33,7 @@ private:
 	//VkFormat mSwapChainImageFormat;
 	//VkExtent2D mSwapChainExtent;
 	VulkanAppSwapChain mVulkanAppSwapChain;
+	VulkanAppImageView mVulkanAppImageView;
 public:
 	void Run();
 private:
