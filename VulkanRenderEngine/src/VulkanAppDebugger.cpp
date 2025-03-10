@@ -1,15 +1,5 @@
 #include "VulkanAppDebugger.hpp"
 
-/*
-void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator = nullptr)
-{
-	PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-	if (func != nullptr)
-	{
-		func(instance, debugMessenger, pAllocator);
-	}
-}
-*/
 void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
 {
 	PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT");
@@ -73,8 +63,4 @@ VulkanAppDebugger::VulkanAppDebugger(VkInstance instance, VkDebugUtilsMessengerC
 	{
 		throw std::runtime_error("Failed to setup debug messenger!");
 	}
-}
-
-VulkanAppDebugger::VulkanAppDebugger()
-{
 }

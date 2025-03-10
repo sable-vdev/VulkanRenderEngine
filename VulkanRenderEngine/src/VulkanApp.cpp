@@ -131,13 +131,16 @@ void VulkanApp::CreateVulkanInstance()
 	/*
 	* General optional information about the vulkan application
 	*/
-	VkApplicationInfo appInfo{};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Vulkan";
-	appInfo.applicationVersion = VK_MAKE_API_VERSION(0, 0, 1, 0);
-	appInfo.pEngineName = "Vulkan";
-	appInfo.engineVersion = VK_MAKE_API_VERSION(0, 0, 1, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_0;
+	VkApplicationInfo appInfo
+	{ 
+		VK_STRUCTURE_TYPE_APPLICATION_INFO,
+		nullptr,
+		"Vulkan Engine",
+		VK_MAKE_API_VERSION(0, 0, 1, 0),
+		"Vulkan Engine",
+		VK_MAKE_API_VERSION(0, 0, 1, 0),
+		VK_API_VERSION_1_0
+	}; 
 
 	/*
 	* mandatory information of the Vulkan application
@@ -172,70 +175,10 @@ void VulkanApp::CreateVulkanInstance()
 		throw std::runtime_error("Failed to create the Vulkan instance");
 	}	
 }
-/*
-void VulkanApp::GetPhysicalDevices()
-{
-	/*
-	VulkanAppPhysicalDevice vkapd;
 
-	mPhysicalDevice = vkapd.GetPhysicalDevice(mInstance, mSurfaceKHR);
-	
-	mVulkanAppPhysicalDevice.GetPhysicalDevice(mInstance, mSurfaceKHR);
-
-	glfwShowWindow(mWindow);
-}
-*/
 void VulkanApp::CreateLogicalDevice()
 {
-	//VulkanAppQueueFamilies family = family.FindQueueFamilies(mPhysicalDevice, mSurfaceKHR);
 	VulkanAppQueueFamilies family = family.FindQueueFamilies(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mSurfaceKHR);
-	/*
-	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos{};
-	std::set<uint32_t> uniqueQueueFamilies = { family.graphicsFamily.value(), family.presentFamily.value() };
-	
-	float queuePriority = 1.0f;
-
-	for (uint32_t queueFamily : uniqueQueueFamilies)
-	{
-		VkDeviceQueueCreateInfo queueCreateInfo{};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueFamilyIndex = queueFamily;
-		queueCreateInfo.queueCount = 1;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
-		queueCreateInfos.push_back(queueCreateInfo);
-	}
-
-	VkPhysicalDeviceFeatures deviceFeatures{};
-
-	VkDeviceCreateInfo deviceCreateInfo{};
-	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
-	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-	deviceCreateInfo.pEnabledFeatures = &deviceFeatures;
-	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-	deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-
-	if (enableValidationLayers)
-	{
-		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
-	}
-	else deviceCreateInfo.enabledLayerCount = 0;
-	/*
-	if (vkCreateDevice(mPhysicalDevice, &deviceCreateInfo, nullptr, &mDevice) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create logical device");
-	}
-	//
-	if (vkCreateDevice(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, &deviceCreateInfo, nullptr, &mDevice) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create logical device");
-	}
-
-	vkGetDeviceQueue(mDevice, family.graphicsFamily.value(), 0, &mGraphicsQueue);
-	vkGetDeviceQueue(mDevice, family.presentFamily.value(), 0, &mPresentQueue);
-	*/
-
 	mVulkanAppLogicalDevice = VulkanAppLogicalDevice(family, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, enableValidationLayers, deviceExtensions, validationLayers);
 }
 
@@ -254,22 +197,6 @@ std::vector<const char*> VulkanApp::GetRequiredExtensions()
 
 	return extensions;
 }
-/*
-void VulkanApp::SetupDebugMessenger()
-{
-	if (!enableValidationLayers) return;
-
-	VkDebugUtilsMessengerCreateInfoEXT createInfo;
-	mDebugger = VulkanAppDebugger(mInstance, createInfo);
-
-	//mDebugger.PopulateDebugMessengerCreateInfo(createInfo);
-
-	if (mDebugger.CreateDebugUtilsMessengerEXT(mInstance, &createInfo, nullptr, &mDebugMessenger) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to setup debug messenger!");
-	}
-}
-*/
 
 void VulkanApp::SetupDebugMessenger()
 {
@@ -288,76 +215,5 @@ void VulkanApp::CreateSurfaceGLFW()
 
 void VulkanApp::CreateSwapChain()
 {
-	/*
-	//SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(mPhysicalDevice, mSurfaceKHR);
-	SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mSurfaceKHR);
-
-	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainDetails.formats);
-	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainDetails.presentMode);
-	VkExtent2D extent = ChooseSwapExtent(swapChainDetails.capabilities, mWindow);
-
-	uint32_t imageCount = swapChainDetails.capabilities.minImageCount + 1;
-
-	if (swapChainDetails.capabilities.maxImageCount > 0 && imageCount > swapChainDetails.capabilities.maxImageCount)
-	{
-		imageCount = swapChainDetails.capabilities.maxImageCount;
-	}
-
-	VkSwapchainCreateInfoKHR createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = mSurfaceKHR;
-	createInfo.minImageCount = imageCount;
-	createInfo.imageColorSpace = surfaceFormat.colorSpace;
-	createInfo.imageFormat = surfaceFormat.format;
-	createInfo.imageExtent = extent;
-	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	//VulkanAppQueueFamilies families = families.FindQueueFamilies(mPhysicalDevice, mSurfaceKHR);
-	VulkanAppQueueFamilies families = families.FindQueueFamilies(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mSurfaceKHR);
-	uint32_t queueFamilyIndices[] = { families.graphicsFamily.value(), families.presentFamily.value() };
-
-	if (families.graphicsFamily != families.presentFamily)
-	{
-		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = 2;
-		createInfo.pQueueFamilyIndices = queueFamilyIndices;
-	}
-	else
-	{
-		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		createInfo.queueFamilyIndexCount = 0;
-		createInfo.pQueueFamilyIndices = nullptr;
-	}
-
-	createInfo.preTransform = swapChainDetails.capabilities.currentTransform;
-	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	createInfo.presentMode = presentMode;
-	createInfo.clipped = VK_TRUE;
-	createInfo.oldSwapchain = nullptr;
-	/*
-	if (vkCreateSwapchainKHR(mDevice, &createInfo, nullptr, &mSwapChain) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create swap chain");
-	}
-
-	vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, nullptr);
-	mSwapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, mSwapChainImages.data());
-	//
-
-	if (vkCreateSwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, &createInfo, nullptr, &mSwapChain) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create swap chain");
-	}
-
-	vkGetSwapchainImagesKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, &imageCount, nullptr);
-	mSwapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, &imageCount, mSwapChainImages.data());
-
-	mSwapChainImageFormat = surfaceFormat.format;
-	mSwapChainExtent = extent;
-	*/
-
 	mVulkanAppSwapChain.CreateSwapChain(mWindow, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mVulkanAppLogicalDevice.vulkanDevice, mSurfaceKHR);
 }

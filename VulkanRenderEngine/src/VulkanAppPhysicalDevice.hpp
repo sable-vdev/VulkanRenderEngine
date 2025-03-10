@@ -1,6 +1,4 @@
 #pragma once
-#define GLFW_INCLUDE_VULKAN
-#include "GLFW/glfw3.h"
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -18,7 +16,6 @@ class VulkanAppPhysicalDevice
 {
 public:
 	VkPhysicalDevice vulkanAppPhysicalDevice;
-	//VkPhysicalDevice GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface);
 	void GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface);
 private:
 	VkPhysicalDevice GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface);

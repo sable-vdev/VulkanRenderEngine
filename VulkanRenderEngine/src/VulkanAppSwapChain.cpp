@@ -2,7 +2,6 @@
 
 void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vkpd, VkDevice& device, VkSurfaceKHR& surface)
 {
-	//SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(mPhysicalDevice, mSurfaceKHR);
 	SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(vkpd, surface);
 
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainDetails.formats);
@@ -27,7 +26,6 @@ void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vk
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	//VulkanAppQueueFamilies families = families.FindQueueFamilies(mPhysicalDevice, mSurfaceKHR);
 	VulkanAppQueueFamilies families = families.FindQueueFamilies(vkpd, surface);
 	uint32_t queueFamilyIndices[] = { families.graphicsFamily.value(), families.presentFamily.value() };
 
@@ -49,16 +47,6 @@ void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vk
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = nullptr;
-	/*
-	if (vkCreateSwapchainKHR(mDevice, &createInfo, nullptr, &mSwapChain) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create swap chain");
-	}
-
-	vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, nullptr);
-	mSwapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(mDevice, mSwapChain, &imageCount, mSwapChainImages.data());
-	*/
 
 	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
 	{
