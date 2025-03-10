@@ -9,7 +9,7 @@
 #include "VulkanAppDebugger.hpp"
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppLogicalDevice.hpp"
-#include "VulkanAppSwapChain.hpp"
+//#include "VulkanAppSwapChain.hpp"
 #include "VulkanAppImageView.hpp"
 
 class VulkanApp

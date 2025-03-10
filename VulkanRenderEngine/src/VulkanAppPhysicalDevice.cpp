@@ -95,6 +95,7 @@ std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice device
 
 	for (unsigned int i = 0; i < 256; i++)
 	{
+		if (deviceProperties.deviceName[i] == '\0') break;
 		deviceName += deviceProperties.deviceName[i];
 	}
 

@@ -1,3 +1,4 @@
+#honestly no idea if it still works, complete file made by chatgpt
 cmake_minimum_required(VERSION 3.10)
 project(VulkanRenderEngine VERSION 1.0)
 
