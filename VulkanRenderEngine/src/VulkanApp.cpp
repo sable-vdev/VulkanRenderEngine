@@ -221,6 +221,10 @@ void VulkanApp::CreateSwapChain()
 	mVulkanAppSwapChain.CreateSwapChain(mWindow, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mVulkanAppLogicalDevice.vulkanDevice, mSurfaceKHR);
 }
 
+/*
+* TODO: CONTAINERCLASS FOR GRAPHICSPIPELINE
+*/
+
 void VulkanApp::CreateGraphicsPipeline()
 {
 	auto vertShaderCode = ReadFile("shadersrc/vert.spv");
