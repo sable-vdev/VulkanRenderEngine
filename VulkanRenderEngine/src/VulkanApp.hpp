@@ -20,9 +20,11 @@ private:
 	VkInstance mInstance = nullptr;
 	const uint32_t WIDTH = 1280;
 	const uint32_t HEIGHT = 720;
+	const char* TITLE = "Hello Vulkan";
 	VkSurfaceKHR mSurfaceKHR = nullptr;
 	VulkanAppSwapChain mVulkanAppSwapChain;
 	VulkanAppImageView mVulkanAppImageView;
+	VkPipelineLayout mPipelineLayout;
 public:
 	void Run();
 private:

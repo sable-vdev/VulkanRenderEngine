@@ -54,7 +54,7 @@ void VulkanApp::InitGLFW()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Hello Vulkan", nullptr, nullptr);
+	mWindow = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
 }
 /*
 * Initializing the Vulkan Instance
@@ -64,7 +64,6 @@ void VulkanApp::InitVulkan()
 	CreateVulkanInstance();
 	SetupDebugMessenger();
 	CreateSurfaceGLFW();
-	//GetPhysicalDevices();
 	mVulkanAppPhysicalDevice.GetPhysicalDevice(mInstance, mSurfaceKHR);
 	CreateLogicalDevice();
 	CreateSwapChain();
@@ -86,7 +85,7 @@ void VulkanApp::MainLoop()
 		deltaTime = glfwGetTime();
 		if (deltaTime - lastDeltaTime >= 1.0)
 		{
-			std::cout << framecount << '\n';
+			std::cout << framecount << " (" << 1000.0f / framecount << " ms)\n";
 			framecount = 0;
 			lastDeltaTime = deltaTime;
 		}
@@ -100,6 +99,8 @@ void VulkanApp::MainLoop()
 */
 void VulkanApp::CleanUp()
 {
+	vkDestroyPipelineLayout(mVulkanAppLogicalDevice.vulkanDevice, mPipelineLayout, nullptr);
+
 	mVulkanAppImageView.DestroyImageViews(mVulkanAppLogicalDevice.vulkanDevice);
 	//vkDestroySwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, nullptr);
 	mVulkanAppSwapChain.DestroySwapChain(mVulkanAppLogicalDevice.vulkanDevice, nullptr);
@@ -249,6 +250,109 @@ void VulkanApp::CreateGraphicsPipeline()
 	};
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderCreateInfo, fragShaderCreateInfo };
+
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		0,
+		nullptr,
+		0,
+		nullptr
+	};
+
+	VkPipelineInputAssemblyStateCreateInfo assemblyInputInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+		VK_FALSE
+	};
+
+	VkPipelineViewportStateCreateInfo viewportCreateInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		1,
+		nullptr,
+		1,
+		nullptr
+	};
+
+	VkPipelineRasterizationStateCreateInfo rasterizationCreateInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		VK_FALSE,
+		VK_FALSE,
+		VK_POLYGON_MODE_FILL,
+		VK_CULL_MODE_BACK_BIT,
+		VK_FRONT_FACE_CLOCKWISE,
+		VK_FALSE,
+		0.0f,
+		0.0f,
+		0.0f,
+		1.0f
+	};
+
+	VkPipelineMultisampleStateCreateInfo multisampleCreateInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		VK_SAMPLE_COUNT_1_BIT,
+		VK_FALSE,
+		1.0f,
+		nullptr,
+		VK_FALSE,
+		VK_FALSE
+	};
+
+	VkPipelineColorBlendAttachmentState colorBlendAttachment = {
+		VK_FALSE,
+		VK_BLEND_FACTOR_ONE,
+		VK_BLEND_FACTOR_ZERO,
+		VK_BLEND_OP_ADD,
+		VK_BLEND_FACTOR_ONE,
+		VK_BLEND_FACTOR_ZERO,
+		VK_BLEND_OP_ADD,
+		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_A_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_G_BIT
+	};
+
+	VkPipelineColorBlendStateCreateInfo colorBlendStateInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		VK_FALSE,
+		VK_LOGIC_OP_COPY,
+		1,
+		&colorBlendAttachment,
+		{0.0f, 0.0f, 0.0f, 0.0f}
+	};
+
+	std::vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+
+	VkPipelineDynamicStateCreateInfo dynamicState = {
+		VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+		nullptr,
+		0,
+		static_cast<uint32_t>(dynamicStates.size()),
+		dynamicStates.data()
+	};
+
+	VkPipelineLayoutCreateInfo pipelineCreateInfo = {
+		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+		nullptr,
+		0,
+		0,
+		nullptr,
+		0,
+		nullptr,
+	};
+
+	if (vkCreatePipelineLayout(mVulkanAppLogicalDevice.vulkanDevice, &pipelineCreateInfo, nullptr, &mPipelineLayout) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create pipeline layout");
+	}
 
 	vkDestroyShaderModule(mVulkanAppLogicalDevice.vulkanDevice, vertexModule, nullptr);
 	vkDestroyShaderModule(mVulkanAppLogicalDevice.vulkanDevice, fragmentModule, nullptr);
