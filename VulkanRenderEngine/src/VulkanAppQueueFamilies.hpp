@@ -9,12 +9,12 @@ struct VulkanAppQueueFamilies
 {
 	std::optional<uint32_t> graphicsFamily;
 	std::optional<uint32_t> presentFamily;
-	inline bool IsComplete()
+	bool IsComplete()
 	{
 		return graphicsFamily.has_value() && presentFamily.has_value();
 	}
 
-	inline VulkanAppQueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd, VkSurfaceKHR surface)
+	VulkanAppQueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd, VkSurfaceKHR surface)
 	{
 		VulkanAppQueueFamilies queueFamilies;
 
@@ -45,7 +45,7 @@ struct VulkanAppQueueFamilies
 		return queueFamilies;
 	}
 
-	inline VulkanAppQueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd)
+	VulkanAppQueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd)
 	{
 		VulkanAppQueueFamilies queueFamilies;
 

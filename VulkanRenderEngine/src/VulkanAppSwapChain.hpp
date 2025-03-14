@@ -27,7 +27,7 @@ public:
 public:
 	void CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vkpd, VkDevice& device, VkSurfaceKHR& surface);
 	void DestroySwapChain(VkDevice device, const VkAllocationCallbacks* pAllocator);
-	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice vkpd, VkSurfaceKHR surface);
+	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 private:
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);

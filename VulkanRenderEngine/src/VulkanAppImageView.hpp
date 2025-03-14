@@ -10,7 +10,7 @@ class VulkanAppImageView
 public:
 	std::vector<VkImageView> imageViews;
 public:
-	void CreateImageViews(const VkDevice& device, VulkanAppSwapChain& swapChain);
-	void DestroyImageViews(const VkDevice& device);
+	void CreateImageViews(const VkDevice& device, const VulkanAppSwapChain& swapChain);
+	void DestroyImageViews(const VkDevice& device) const;
 };
 

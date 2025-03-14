@@ -3,10 +3,9 @@
 
 int main()
 {
-	VulkanApp window;
-
 	try
 	{
+		VulkanApp window;
 		window.Run();
 	}
 	catch (const std::exception &e)

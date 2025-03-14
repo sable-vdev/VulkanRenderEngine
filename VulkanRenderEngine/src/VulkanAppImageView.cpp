@@ -1,6 +1,6 @@
 #include "VulkanAppImageView.hpp"
 
-void VulkanAppImageView::CreateImageViews(const VkDevice& device, VulkanAppSwapChain& swapChain)
+void VulkanAppImageView::CreateImageViews(const VkDevice& device, const VulkanAppSwapChain& swapChain)
 {
 	imageViews.reserve(swapChain.swapChainImages.size());
 
@@ -33,7 +33,7 @@ void VulkanAppImageView::CreateImageViews(const VkDevice& device, VulkanAppSwapC
 	}
 }
 
-void VulkanAppImageView::DestroyImageViews(const VkDevice& device)
+void VulkanAppImageView::DestroyImageViews(const VkDevice& device) const
 {
 	for (auto& imageView : imageViews)
 	{

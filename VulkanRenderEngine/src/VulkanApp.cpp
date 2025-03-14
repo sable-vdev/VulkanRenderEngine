@@ -39,7 +39,7 @@ bool CheckValidationLayerSupport()
 */
 void VulkanApp::Run()
 {
-	InitGLFW();
+	InitGlfw();
 	InitVulkan();
 	MainLoop();
 	CleanUp();
@@ -47,14 +47,14 @@ void VulkanApp::Run()
 /*
 * Initializing GLFW and creating the window
 */
-void VulkanApp::InitGLFW()
+void VulkanApp::InitGlfw()
 {
 	glfwInit();
 	
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	mWindow = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
+	m_Window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
 }
 /*
 * Initializing the Vulkan Instance
@@ -63,11 +63,11 @@ void VulkanApp::InitVulkan()
 {
 	CreateVulkanInstance();
 	SetupDebugMessenger();
-	CreateSurfaceGLFW();
-	mVulkanAppPhysicalDevice.GetPhysicalDevice(mInstance, mSurfaceKHR);
+	CreateSurfaceGlfw();
+	m_vulkanAppPhysicalDevice.GetPhysicalDevice(m_Instance, m_surfaceKhr);
 	CreateLogicalDevice();
 	CreateSwapChain();
-	mVulkanAppImageView.CreateImageViews(mVulkanAppLogicalDevice.vulkanDevice, mVulkanAppSwapChain);
+	m_vulkanAppImageView.CreateImageViews(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppSwapChain);
 	CreateGraphicsPipeline();
 }
 /*
@@ -75,21 +75,20 @@ void VulkanApp::InitVulkan()
 */
 void VulkanApp::MainLoop()
 {
-	double deltaTime, lastDeltaTime;
-	int framecount = 0;
-	lastDeltaTime = glfwGetTime();
+	float frameCount = 0.0f;
+	double lastDeltaTime = glfwGetTime();
 
 
-	while (!glfwWindowShouldClose(mWindow))
+	while (!glfwWindowShouldClose(m_Window))
 	{
-		deltaTime = glfwGetTime();
+		double deltaTime = glfwGetTime();
 		if (deltaTime - lastDeltaTime >= 1.0)
 		{
-			std::cout << framecount << " (" << 1000.0f / framecount << " ms)\n";
-			framecount = 0;
+			std::cout << frameCount << " (" << 1000.0f / frameCount << " ms)\n";
+			frameCount = 0;
 			lastDeltaTime = deltaTime;
 		}
-		framecount++;
+		frameCount++;
 
 		glfwPollEvents();
 	}
@@ -99,24 +98,24 @@ void VulkanApp::MainLoop()
 */
 void VulkanApp::CleanUp()
 {
-	vkDestroyPipelineLayout(mVulkanAppLogicalDevice.vulkanDevice, mPipelineLayout, nullptr);
+	vkDestroyPipelineLayout(m_vulkanAppLogicalDevice.vulkanDevice, m_pipelineLayout, nullptr);
 
-	mVulkanAppImageView.DestroyImageViews(mVulkanAppLogicalDevice.vulkanDevice);
+	m_vulkanAppImageView.DestroyImageViews(m_vulkanAppLogicalDevice.vulkanDevice);
 	//vkDestroySwapchainKHR(mVulkanAppLogicalDevice.vulkanDevice, mSwapChain, nullptr);
-	mVulkanAppSwapChain.DestroySwapChain(mVulkanAppLogicalDevice.vulkanDevice, nullptr);
+	m_vulkanAppSwapChain.DestroySwapChain(m_vulkanAppLogicalDevice.vulkanDevice, nullptr);
 	//vkDestroyDevice(mVulkanAppLogicalDevice.vulkanDevice, nullptr);
-	mVulkanAppLogicalDevice.DestoryLogicalDevice();
+	m_vulkanAppLogicalDevice.DestroyLogicalDevice();
 
 	if (enableValidationLayers)
 	{
-		mDebugger.DestroyDebugUtilsMessengerEXT();
+		m_debugger.DestroyDebugUtilsMessengerEXT();
 	}
 
-	vkDestroySurfaceKHR(mInstance, mSurfaceKHR, nullptr);
+	vkDestroySurfaceKHR(m_Instance, m_surfaceKhr, nullptr);
 
-	vkDestroyInstance(mInstance, nullptr);
+	vkDestroyInstance(m_Instance, nullptr);
 
-	glfwDestroyWindow(mWindow);
+	glfwDestroyWindow(m_Window);
 
 	glfwTerminate();
 }
@@ -133,7 +132,7 @@ void VulkanApp::CreateVulkanInstance()
 	/*
 	* General optional information about the vulkan application
 	*/
-	VkApplicationInfo appInfo
+	constexpr VkApplicationInfo appInfo
 	{ 
 		VK_STRUCTURE_TYPE_APPLICATION_INFO,
 		nullptr,
@@ -152,7 +151,7 @@ void VulkanApp::CreateVulkanInstance()
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 	
-	auto extensions = GetRequiredExtensions();
+	const auto extensions = GetRequiredExtensions();
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -163,8 +162,8 @@ void VulkanApp::CreateVulkanInstance()
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 
-		mDebugger.PopulateDebugMessengerCreateInfo(debugCreateInfo);
-		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+		m_debugger.PopulateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = &debugCreateInfo;
 	}
 	else 
 	{ 
@@ -173,7 +172,7 @@ void VulkanApp::CreateVulkanInstance()
 	}
 
 	//Creating the instance
-	if (vkCreateInstance(&createInfo, nullptr, &mInstance) != VK_SUCCESS)
+	if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create the Vulkan instance");
 	}	
@@ -181,17 +180,17 @@ void VulkanApp::CreateVulkanInstance()
 
 void VulkanApp::CreateLogicalDevice()
 {
-	VulkanAppQueueFamilies family = family.FindQueueFamilies(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mSurfaceKHR);
-	mVulkanAppLogicalDevice = VulkanAppLogicalDevice(family, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, enableValidationLayers, deviceExtensions, validationLayers);
+	VulkanAppQueueFamilies family;
+	family = family.FindQueueFamilies(m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, m_surfaceKhr);
+	m_vulkanAppLogicalDevice = VulkanAppLogicalDevice(family, m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, enableValidationLayers, deviceExtensions, validationLayers);
 }
 
 std::vector<const char*> VulkanApp::GetRequiredExtensions()
 {
 	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+	std::vector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
 	if (enableValidationLayers)
 	{
@@ -203,14 +202,14 @@ std::vector<const char*> VulkanApp::GetRequiredExtensions()
 
 void VulkanApp::SetupDebugMessenger()
 {
-	if (!enableValidationLayers) return;
-	VkDebugUtilsMessengerCreateInfoEXT createInfo{};
-	mDebugger = VulkanAppDebugger(mInstance, createInfo);
+	if constexpr(!enableValidationLayers) return;
+	constexpr VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+	m_debugger = VulkanAppDebugger(m_Instance, createInfo);
 }
 
-void VulkanApp::CreateSurfaceGLFW()
+void VulkanApp::CreateSurfaceGlfw()
 {
-	if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &mSurfaceKHR) != VK_SUCCESS)
+	if (glfwCreateWindowSurface(m_Instance, m_Window, nullptr, &m_surfaceKhr) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create window surface");
 	}
@@ -218,7 +217,7 @@ void VulkanApp::CreateSurfaceGLFW()
 
 void VulkanApp::CreateSwapChain()
 {
-	mVulkanAppSwapChain.CreateSwapChain(mWindow, mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mVulkanAppLogicalDevice.vulkanDevice, mSurfaceKHR);
+	m_vulkanAppSwapChain.CreateSwapChain(m_Window, m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, m_vulkanAppLogicalDevice.vulkanDevice, m_surfaceKhr);
 }
 
 /*
@@ -333,7 +332,7 @@ void VulkanApp::CreateGraphicsPipeline()
 		{0.0f, 0.0f, 0.0f, 0.0f}
 	};
 
-	std::vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+	std::vector dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 
 	VkPipelineDynamicStateCreateInfo dynamicState = {
 		VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -353,18 +352,18 @@ void VulkanApp::CreateGraphicsPipeline()
 		nullptr,
 	};
 
-	if (vkCreatePipelineLayout(mVulkanAppLogicalDevice.vulkanDevice, &pipelineCreateInfo, nullptr, &mPipelineLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(m_vulkanAppLogicalDevice.vulkanDevice, &pipelineCreateInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout");
 	}
 
-	vkDestroyShaderModule(mVulkanAppLogicalDevice.vulkanDevice, vertexModule, nullptr);
-	vkDestroyShaderModule(mVulkanAppLogicalDevice.vulkanDevice, fragmentModule, nullptr);
+	vkDestroyShaderModule(m_vulkanAppLogicalDevice.vulkanDevice, vertexModule, nullptr);
+	vkDestroyShaderModule(m_vulkanAppLogicalDevice.vulkanDevice, fragmentModule, nullptr);
 }
 
 VkShaderModule VulkanApp::CreateShaderModule(const std::vector<char>& code)
 {
-	VkShaderModuleCreateInfo createInfo{
+	const VkShaderModuleCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 		nullptr,
 		0,
@@ -373,7 +372,7 @@ VkShaderModule VulkanApp::CreateShaderModule(const std::vector<char>& code)
 	};
 	VkShaderModule shaderModule;
 
-	if (vkCreateShaderModule(mVulkanAppLogicalDevice.vulkanDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	if (vkCreateShaderModule(m_vulkanAppLogicalDevice.vulkanDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create shader module");
 	}

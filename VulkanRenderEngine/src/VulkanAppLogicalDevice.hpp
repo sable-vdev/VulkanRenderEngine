@@ -15,8 +15,8 @@ private:
 	VkQueue mGraphicsQueue = nullptr;
 	VkQueue mPresentQueue = nullptr;
 public:
-	VulkanAppLogicalDevice();
+	VulkanAppLogicalDevice() = default;
 	VulkanAppLogicalDevice(VulkanAppQueueFamilies family, VkPhysicalDevice physicalDevice, bool enableValidationLayers, const std::vector<const char*>& deviceExtensions, const std::vector<const char*>& validationLayers);
-	void DestoryLogicalDevice();
+	void DestroyLogicalDevice() const;
 };
 

@@ -1,14 +1,15 @@
 #include "VulkanAppLogicalDevice.hpp"
 
-VulkanAppLogicalDevice::VulkanAppLogicalDevice()
-{
-}
-
 VulkanAppLogicalDevice::VulkanAppLogicalDevice(VulkanAppQueueFamilies family, VkPhysicalDevice physicalDevice, bool enableValidationLayers, const std::vector<const char*>& deviceExtensions, const std::vector<const char*>& validationLayers)
 {
-	//VulkanAppQueueFamilies family = family.FindQueueFamilies(mVulkanAppPhysicalDevice.vulkanAppPhysicalDevice, mSurfaceKHR);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos{};
+	
+	if (!family.graphicsFamily.has_value() || !family.presentFamily.has_value())
+	{
+		throw std::runtime_error("Graphics Family or Present Family not found");
+	}
+	
 	std::set<uint32_t> uniqueQueueFamilies = { family.graphicsFamily.value(), family.presentFamily.value() };
 
 	float queuePriority = 1.0f;
@@ -39,22 +40,22 @@ VulkanAppLogicalDevice::VulkanAppLogicalDevice(VulkanAppQueueFamilies family, Vk
 		deviceCreateInfo.ppEnabledLayerNames = validationLayers.data();
 	}
 	else deviceCreateInfo.enabledLayerCount = 0;
-	/*
-	if (vkCreateDevice(mPhysicalDevice, &deviceCreateInfo, nullptr, &vulkanDevice) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create logical device");
-	}
-	*/
+
 	if (vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &vulkanDevice) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create logical device");
 	}
-
+	
+	if (!family.graphicsFamily.has_value() || !family.presentFamily.has_value())
+	{
+		throw std::runtime_error("Graphics Family or Present Family not found");
+	}
+	
 	vkGetDeviceQueue(vulkanDevice, family.graphicsFamily.value(), 0, &mGraphicsQueue);
 	vkGetDeviceQueue(vulkanDevice, family.presentFamily.value(), 0, &mPresentQueue);
 }
 
-void VulkanAppLogicalDevice::DestoryLogicalDevice()
+void VulkanAppLogicalDevice::DestroyLogicalDevice() const
 {
 	vkDestroyDevice(vulkanDevice, nullptr);
 }

@@ -13,22 +13,23 @@
 class VulkanApp
 {
 private:
-	VulkanAppLogicalDevice mVulkanAppLogicalDevice;
-	VulkanAppPhysicalDevice mVulkanAppPhysicalDevice{};
-	VulkanAppDebugger mDebugger;
-	GLFWwindow* mWindow = nullptr;
-	VkInstance mInstance = nullptr;
-	const uint32_t WIDTH = 1280;
-	const uint32_t HEIGHT = 720;
+	VulkanAppLogicalDevice m_vulkanAppLogicalDevice;
+	VulkanAppPhysicalDevice m_vulkanAppPhysicalDevice;
+	VulkanAppDebugger m_debugger;
+	GLFWwindow* m_Window = nullptr;
+	VkInstance m_Instance = nullptr;
+	const int WIDTH = 1280;
+	const int HEIGHT = 720;
 	const char* TITLE = "Hello Vulkan";
-	VkSurfaceKHR mSurfaceKHR = nullptr;
-	VulkanAppSwapChain mVulkanAppSwapChain;
-	VulkanAppImageView mVulkanAppImageView;
-	VkPipelineLayout mPipelineLayout;
+	VkSurfaceKHR m_surfaceKhr = nullptr;
+	VulkanAppSwapChain m_vulkanAppSwapChain;
+	VulkanAppImageView m_vulkanAppImageView;
+	VkPipelineLayout m_pipelineLayout;
 public:
+	VulkanApp() = default;
 	void Run();
 private:
-	void InitGLFW();
+	void InitGlfw();
 	void InitVulkan();
 	void MainLoop();
 	void CleanUp();
@@ -36,12 +37,12 @@ private:
 	void CreateLogicalDevice();
 	std::vector<const char*> GetRequiredExtensions();
 	void SetupDebugMessenger();
-	void CreateSurfaceGLFW(); //Implementation can be made platform specific without glfw using win32api
+	void CreateSurfaceGlfw(); //Implementation can be made platform specific without glfw using win32api
 	void CreateSwapChain();
 	void CreateGraphicsPipeline();
 	VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
-	inline std::vector<char> ReadFile(const std::string& filename)
+	static std::vector<char> ReadFile(const std::string& filename)
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -50,7 +51,7 @@ private:
 			throw std::runtime_error("Failed to open file");
 		}
 
-		size_t fileSize = static_cast<size_t>(file.tellg());
+		const size_t fileSize = file.tellg();
 		std::vector<char> buffer(fileSize);
 		file.seekg(0);
 		file.read(buffer.data(), fileSize);

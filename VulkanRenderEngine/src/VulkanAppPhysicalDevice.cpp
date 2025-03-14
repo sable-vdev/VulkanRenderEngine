@@ -1,8 +1,7 @@
 #include "VulkanAppPhysicalDevice.hpp"
 
-void VulkanAppPhysicalDevice::GetPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
+void VulkanAppPhysicalDevice::GetPhysicalDevice(const VkInstance instance, const VkSurfaceKHR surface)
 {
-	VkPhysicalDevice physicalDevice = nullptr;
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
@@ -10,7 +9,7 @@ void VulkanAppPhysicalDevice::GetPhysicalDevice(VkInstance instance, VkSurfaceKH
 	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
 	if (deviceCount <= 0) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
-	physicalDevice = GetBestGPU(devices, surface);
+	const VkPhysicalDevice physicalDevice = GetBestGPU(devices, surface);
 	std::cout << "Using: " << GetVulkanDeviceInfo(physicalDevice) << '\n';
 
 	if (physicalDevice == nullptr) throw std::runtime_error("Failed to find any GPU supporting Vulkan!");
@@ -20,17 +19,16 @@ void VulkanAppPhysicalDevice::GetPhysicalDevice(VkInstance instance, VkSurfaceKH
 
 VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface)
 {
-	int deviceRank = 0;
 	std::multimap<int, VkPhysicalDevice> vulkanDevices;
 
 		
 	for (const auto& device : devices)
 	{
-		VulkanAppQueueFamilies family = family.FindQueueFamilies(device, surface);
+		VulkanAppQueueFamilies family;
+		family = family.FindQueueFamilies(device, surface);
 		if (CheckDeviceExtensionSupport(device))
 		{
 			VulkanAppSwapChain swapchain;
-			//SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(device, surface);
 			SwapChainSupportDetails swapChainDetails = swapchain.QuerySwapChainSupport(device, surface);
 			if (!swapChainDetails.formats.empty() && !swapChainDetails.presentMode.empty())
 			{
@@ -44,7 +42,7 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysica
 	{
 		return vulkanDevices.rbegin()->second;
 	}
-	else throw std::runtime_error("Failed to find suitable GPU");
+	throw std::runtime_error("Failed to find suitable GPU");
 }
 
 bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
@@ -65,19 +63,19 @@ bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
 	return requiredExtensions.empty();
 }
 
-std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice device)
+std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice vkpd)
 {
 	VkPhysicalDeviceProperties deviceProperties;
-	vkGetPhysicalDeviceProperties(device, &deviceProperties);
+	vkGetPhysicalDeviceProperties(vkpd, &deviceProperties);
 	VkPhysicalDeviceFeatures deviceFeatures;
-	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-	std::string deviceName = "";
-	std::string deviceType = "";
+	vkGetPhysicalDeviceFeatures(vkpd, &deviceFeatures);
+	std::string deviceName;
+	std::string deviceType;
 
-	for (unsigned int i = 0; i < 256; i++)
+	for (const char i : deviceProperties.deviceName)
 	{
-		if (deviceProperties.deviceName[i] == '\0') break;
-		deviceName += deviceProperties.deviceName[i];
+		if (i == '\0') break;
+		deviceName += i;
 	}
 
 	switch (deviceProperties.deviceType)
@@ -89,7 +87,7 @@ std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice device
 		deviceType = "Discrete GPU";
 		break;
 	default:
-		deviceType = "Devicetype unkown";
+		deviceType = "Devicetype unkown " + std::to_string(deviceProperties.deviceType);
 		break;
 	}
 
