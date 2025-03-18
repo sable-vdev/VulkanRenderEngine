@@ -1,12 +1,9 @@
 #pragma once
-#define GLFW_INCLUDE_VULKAN
-#include "GLFW/glfw3.h"
 #include "VulkanAppQueueFamilies.hpp"
 #include <stdexcept>
 #include <vector>
 #include <limits>
 #include <algorithm>
-
 #include <iostream>
 
 struct SwapChainSupportDetails
@@ -26,7 +23,7 @@ public:
 
 public:
 	void CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vkpd, VkDevice& device, VkSurfaceKHR& surface);
-	void DestroySwapChain(VkDevice device, const VkAllocationCallbacks* pAllocator);
+	void DestroySwapChain(VkDevice device);
 	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 private:
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

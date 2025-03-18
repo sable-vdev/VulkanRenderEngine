@@ -1,15 +1,14 @@
 #pragma once
 #include <stdexcept>
-#include <vector>
 #include <set>
 #include <iostream>
 #include <cstring>
-#include <fstream>
 #include "VulkanAppDebugger.hpp"
 #include "VulkanAppPhysicalDevice.hpp"
 #include "VulkanAppLogicalDevice.hpp"
 #include "VulkanAppImageView.hpp"
 #include "VulkanAppGraphicsPipeline.hpp"
+#include "VulkanAppFramebuffer.hpp"
 
 class VulkanApp
 {
@@ -26,6 +25,7 @@ private:
 	VulkanAppSwapChain m_vulkanAppSwapChain;
 	VulkanAppImageView m_vulkanAppImageView;
 	VulkanAppGraphicsPipeline m_vulkanAppGraphicsPipeline;
+	VulkanAppFramebuffer m_vulkanAppFramebuffer;
 public:
 	VulkanApp() = default;
 	void Run();
@@ -40,5 +40,6 @@ private:
 	void SetupDebugMessenger();
 	void CreateSurfaceGlfw(); //Implementation can be made platform specific without glfw using win32api
 	void CreateSwapChain();
+	void CreateFramebuffer();
 };
 

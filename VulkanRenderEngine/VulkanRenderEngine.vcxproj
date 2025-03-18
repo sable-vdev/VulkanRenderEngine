@@ -97,6 +97,7 @@
     <ClCompile Include="src\VulkanAppSwapChain.cpp" />
     <ClCompile Include="src\VulkanAppImageView.cpp" />
     <ClCompile Include="src\VulkanAppGraphicsPipeline.cpp" />
+    <ClCompile Include="src\VulkanAppFramebuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VulkanAppDebugger.hpp" />
@@ -107,6 +108,7 @@
     <ClInclude Include="src\VulkanAppLogicalDevice.hpp" />
     <ClInclude Include="src\VulkanAppImageView.hpp" />
     <ClInclude Include="src\VulkanAppGraphicsPipeline.hpp" />
+    <ClInclude Include="src\VulkanAppFramebuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shadersrc\compile.bat" />

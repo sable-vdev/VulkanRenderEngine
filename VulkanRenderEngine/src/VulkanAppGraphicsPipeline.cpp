@@ -4,7 +4,7 @@ void VulkanAppGraphicsPipeline::DestroyGraphicsPipeline(VkDevice& device)
 {
 	vkDestroyPipeline(device, m_pipeline, nullptr);
 	vkDestroyPipelineLayout(device, m_pipelineLayout, nullptr);
-	vkDestroyRenderPass(device, m_renderPass, nullptr);
+	vkDestroyRenderPass(device, renderPass, nullptr);
 }
 
 VulkanAppGraphicsPipeline::VulkanAppGraphicsPipeline(VkDevice& device, VkFormat swapChainImageFormat)
@@ -162,7 +162,7 @@ void VulkanAppGraphicsPipeline::CreateGraphicsPipeline(VkDevice& device)
 		.pColorBlendState = &colorBlendStateInfo,
 		.pDynamicState = &dynamicState,
 		.layout = m_pipelineLayout,
-		.renderPass = m_renderPass,
+		.renderPass = renderPass,
 		.subpass = 0,
 		.basePipelineHandle = nullptr,
 		.basePipelineIndex = -1
@@ -221,7 +221,7 @@ void VulkanAppGraphicsPipeline::CreateRenderPass(VkDevice& device, VkFormat swap
 		.pDependencies = nullptr
 	};
 
-	if (vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &m_renderPass) != VK_SUCCESS)
+	if (vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &renderPass) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create render pass");
 	}

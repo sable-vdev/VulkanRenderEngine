@@ -65,9 +65,9 @@ void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vk
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
 }
 
-void VulkanAppSwapChain::DestroySwapChain(VkDevice device, const VkAllocationCallbacks* pAllocator)
+void VulkanAppSwapChain::DestroySwapChain(VkDevice device)
 {
-	vkDestroySwapchainKHR(device, swapChain, pAllocator);
+	vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
 SwapChainSupportDetails VulkanAppSwapChain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)

@@ -69,6 +69,7 @@ void VulkanApp::InitVulkan()
 	CreateSwapChain();
 	m_vulkanAppImageView.CreateImageViews(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppSwapChain);
 	m_vulkanAppGraphicsPipeline = VulkanAppGraphicsPipeline(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppSwapChain.swapChainImageFormat);
+	CreateFramebuffer();
 }
 
 /*
@@ -101,7 +102,9 @@ void VulkanApp::CleanUp()
 {
 	m_vulkanAppGraphicsPipeline.DestroyGraphicsPipeline(m_vulkanAppLogicalDevice.vulkanDevice);
 	m_vulkanAppImageView.DestroyImageViews(m_vulkanAppLogicalDevice.vulkanDevice);
-	m_vulkanAppSwapChain.DestroySwapChain(m_vulkanAppLogicalDevice.vulkanDevice, nullptr);
+	m_vulkanAppSwapChain.DestroySwapChain(m_vulkanAppLogicalDevice.vulkanDevice);
+	m_vulkanAppFramebuffer.DestroyFramebuffers(m_vulkanAppLogicalDevice.vulkanDevice);
+
 	m_vulkanAppLogicalDevice.DestroyLogicalDevice();
 
 	if (enableValidationLayers)
@@ -132,13 +135,13 @@ void VulkanApp::CreateVulkanInstance()
 	*/
 	constexpr VkApplicationInfo appInfo
 	{ 
-		VK_STRUCTURE_TYPE_APPLICATION_INFO,
-		nullptr,
-		"Vulkan Engine",
-		VK_MAKE_API_VERSION(0, 0, 1, 0),
-		"Vulkan Engine",
-		VK_MAKE_API_VERSION(0, 0, 1, 0),
-		VK_API_VERSION_1_0
+		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+		.pNext = nullptr,
+		.pApplicationName = "Vulkan Engine",
+		.applicationVersion = VK_MAKE_API_VERSION(0, 0, 1, 0),
+		.pEngineName = "Vulkan Engine",
+		.engineVersion = VK_MAKE_API_VERSION(0, 0, 1, 0),
+		.apiVersion = VK_API_VERSION_1_0
 	}; 
 
 	/*
@@ -155,7 +158,7 @@ void VulkanApp::CreateVulkanInstance()
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 
-	if (enableValidationLayers)
+	if constexpr(enableValidationLayers)
 	{
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -190,7 +193,7 @@ std::vector<const char*> VulkanApp::GetRequiredExtensions()
 
 	std::vector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	if (enableValidationLayers)
+	if constexpr(enableValidationLayers)
 	{
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
@@ -201,7 +204,7 @@ std::vector<const char*> VulkanApp::GetRequiredExtensions()
 void VulkanApp::SetupDebugMessenger()
 {
 	if constexpr(!enableValidationLayers) return;
-	constexpr VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+	VkDebugUtilsMessengerCreateInfoEXT createInfo{};
 	m_debugger = VulkanAppDebugger(m_instance, createInfo);
 }
 
@@ -216,4 +219,9 @@ void VulkanApp::CreateSurfaceGlfw()
 void VulkanApp::CreateSwapChain()
 {
 	m_vulkanAppSwapChain.CreateSwapChain(m_window, m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, m_vulkanAppLogicalDevice.vulkanDevice, m_surfaceKhr);
+}
+
+void VulkanApp::CreateFramebuffer()
+{
+	m_vulkanAppFramebuffer.CreateFramebuffers(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppImageView.imageViews, m_vulkanAppSwapChain.swapChainExtent, m_vulkanAppGraphicsPipeline.renderPass);
 }

@@ -7,8 +7,9 @@
 
 class VulkanAppGraphicsPipeline
 {
+public:
+	VkRenderPass renderPass = nullptr;
 private:
-	VkRenderPass m_renderPass = nullptr;
 	VkPipelineLayout m_pipelineLayout = nullptr;
 	VkPipeline m_pipeline = nullptr;
 public:
