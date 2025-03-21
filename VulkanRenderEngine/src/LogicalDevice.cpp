@@ -51,8 +51,8 @@ LogicalDevice::LogicalDevice(QueueFamilies family, VkPhysicalDevice physicalDevi
 		throw std::runtime_error("Graphics Family or Present Family not found");
 	}
 	
-	vkGetDeviceQueue(vulkanDevice, family.graphicsFamily.value(), 0, &mGraphicsQueue);
-	vkGetDeviceQueue(vulkanDevice, family.presentFamily.value(), 0, &mPresentQueue);
+	vkGetDeviceQueue(vulkanDevice, family.graphicsFamily.value(), 0, &graphicsQueue);
+	vkGetDeviceQueue(vulkanDevice, family.presentFamily.value(), 0, &presentQueue);
 }
 
 void LogicalDevice::DestroyLogicalDevice() const

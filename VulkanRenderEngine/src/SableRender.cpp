@@ -1,7 +1,5 @@
 #include "SableRender.hpp"
 
-
-
 const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
 #ifdef NDEBUG
@@ -73,6 +71,7 @@ void SableRender::InitVulkan()
 	CreateGraphicsPipeline();
 	CreateFramebuffer();
 	CreateCommandBuffer();
+	CreateSyncObjects();
 }
 
 /*
@@ -88,10 +87,58 @@ void SableRender::MainLoop()
 		glfwPollEvents();
 		DrawFrame();
 	}
+
+	vkDeviceWaitIdle(m_sableLogicalDevice.vulkanDevice);
 }
 void SableRender::DrawFrame()
 {
+	vkWaitForFences(m_sableLogicalDevice.vulkanDevice, 1, &m_inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(m_sableLogicalDevice.vulkanDevice, 1, &m_inFlightFence);
 
+	VkFenceCreateInfo fenceInfo = {
+		.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = VK_FENCE_CREATE_SIGNALED_BIT
+	};
+	//aquire image from swap chain
+	uint32_t imageIndex;
+	vkAcquireNextImageKHR(m_sableLogicalDevice.vulkanDevice, m_sableSwapChain.swapChain, UINT32_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkResetCommandBuffer(m_sableCommandBuffer.commandBuffer, 0);
+	m_sableCommandBuffer.RecordCommandBuffer(imageIndex);
+
+	VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphore };
+	VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore };
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+	VkSubmitInfo submitInfo = {
+		.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		.pNext = nullptr,
+		.waitSemaphoreCount = 1,
+		.pWaitSemaphores = waitSemaphores,
+		.pWaitDstStageMask = waitStages,
+		.commandBufferCount = 1,
+		.pCommandBuffers = &m_sableCommandBuffer.commandBuffer,
+		.signalSemaphoreCount = 1,
+		.pSignalSemaphores = signalSemaphores
+	};
+
+	if (vkQueueSubmit(m_sableLogicalDevice.graphicsQueue, 1, &submitInfo, m_inFlightFence) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to submit draw command buffer");
+	}
+
+	VkPresentInfoKHR presentInfo = {  
+		.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+		.pNext = nullptr,
+		.waitSemaphoreCount = 1,
+		.pWaitSemaphores = signalSemaphores,
+		.swapchainCount = 1,
+		.pSwapchains = &m_sableSwapChain.swapChain,
+		.pImageIndices = &imageIndex,
+		.pResults = nullptr
+	};
+
+	vkQueuePresentKHR(m_sableLogicalDevice.presentQueue, &presentInfo);
 }
 
 void SableRender::CalculateFps()
@@ -110,6 +157,10 @@ void SableRender::CalculateFps()
 */
 void SableRender::CleanUp()
 {
+	vkDestroySemaphore(m_sableLogicalDevice.vulkanDevice, m_imageAvailableSemaphore, nullptr);
+	vkDestroySemaphore(m_sableLogicalDevice.vulkanDevice, m_renderFinishedSemaphore, nullptr);
+	vkDestroyFence(m_sableLogicalDevice.vulkanDevice, m_inFlightFence, nullptr);
+
 	m_sableCommandBuffer.DestroyCommandBuffer(m_sableLogicalDevice.vulkanDevice);
 	m_sableGraphicsPipeline.DestroyGraphicsPipeline(m_sableLogicalDevice.vulkanDevice);
 	m_sableImageView.DestroyImageViews(m_sableLogicalDevice.vulkanDevice);
@@ -255,4 +306,26 @@ void SableRender::CreateCommandBuffer()
 {
 	m_sableCommandBuffer.CreateCommandBuffer(m_sableLogicalDevice.vulkanDevice, m_sablePhysicalDevice.vulkanAppPhysicalDevice,
 		m_sableSwapChain.swapChainExtent, m_sableFramebuffer.frameBuffers, m_sableGraphicsPipeline.renderPass, m_sableGraphicsPipeline.pipeline);
+}
+
+void SableRender::CreateSyncObjects()
+{
+	VkSemaphoreCreateInfo semaphoreCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0
+	};
+
+	VkFenceCreateInfo fenceInfo = {
+		.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0
+	};
+
+	if (vkCreateSemaphore(m_sableLogicalDevice.vulkanDevice, &semaphoreCreateInfo, nullptr, &m_imageAvailableSemaphore) != VK_SUCCESS ||
+		vkCreateSemaphore(m_sableLogicalDevice.vulkanDevice, &semaphoreCreateInfo, nullptr, &m_renderFinishedSemaphore) != VK_SUCCESS ||
+		vkCreateFence(m_sableLogicalDevice.vulkanDevice, &fenceInfo, nullptr, &m_inFlightFence) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create semaphores!");
+	}
 }

@@ -1,7 +1,7 @@
 #include "CommandBuffer.hpp"
 
 
-void CommandBuffer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+void CommandBuffer::RecordCommandBuffer(uint32_t& imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -94,7 +94,7 @@ void CommandBuffer::CreateCommandBuffer(const VkDevice& device, const VkPhysical
 		.commandBufferCount = 1
 	};
 
-	if (vkAllocateCommandBuffers(device, &allocateInfo, &m_commandBuffer) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(device, &allocateInfo, &commandBuffer) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate command buffers");
 	}

@@ -29,6 +29,11 @@ private:
 	GraphicsPipeline m_sableGraphicsPipeline;
 	Framebuffer m_sableFramebuffer;
 	CommandBuffer m_sableCommandBuffer;
+
+
+	VkSemaphore m_imageAvailableSemaphore;
+	VkSemaphore m_renderFinishedSemaphore;
+	VkFence m_inFlightFence;
 public:
 	SableRender() = default;
 	void Run();
@@ -50,5 +55,6 @@ private:
 	void CreateGraphicsPipeline();
 	void CreateFramebuffer();
 	void CreateCommandBuffer();
+	void CreateSyncObjects();
 };
 

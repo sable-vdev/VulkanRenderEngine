@@ -205,6 +205,16 @@ void GraphicsPipeline::CreateRenderPass(VkDevice& device, VkFormat swapChainImag
 		.pPreserveAttachments = nullptr
 	};
 
+	VkSubpassDependency dependency = { 
+		.srcSubpass = VK_SUBPASS_EXTERNAL,
+		.dstSubpass = 0,
+		.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+		.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+		.srcAccessMask = 0,
+		.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+		.dependencyFlags = 0
+	};
+
 	VkRenderPassCreateInfo renderPassCreateInfo = {
 		.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 		.pNext = nullptr,
@@ -213,8 +223,8 @@ void GraphicsPipeline::CreateRenderPass(VkDevice& device, VkFormat swapChainImag
 		.pAttachments = &colorAttachment,
 		.subpassCount = 1,
 		.pSubpasses = &subpass,
-		.dependencyCount = 0,
-		.pDependencies = nullptr
+		.dependencyCount = 1,
+		.pDependencies = &dependency
 	};
 
 	if (vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &renderPass) != VK_SUCCESS)
