@@ -63,7 +63,7 @@ void CommandBuffer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t 
 	}
 }
 
-void CommandBuffer::CreateCommandPool(VkDevice& device, VkPhysicalDevice& physicalDecvice)
+void CommandBuffer::CreateCommandPool(const VkDevice& device, const VkPhysicalDevice& physicalDecvice)
 {
 	QueueFamilies family;
 	family.FindQueueFamilies(physicalDecvice);
@@ -81,8 +81,8 @@ void CommandBuffer::CreateCommandPool(VkDevice& device, VkPhysicalDevice& physic
 	}
 }
 
-void CommandBuffer::CreateCommandBuffer(VkDevice& device, VkPhysicalDevice& physicalDecvice, VkExtent2D extent,
-	std::vector<VkFramebuffer>& framebuffer, VkRenderPass renderPass, VkPipeline pipeline)
+void CommandBuffer::CreateCommandBuffer(const VkDevice& device, const VkPhysicalDevice& physicalDecvice, const VkExtent2D extent,
+	const std::vector<VkFramebuffer>& framebuffer, const VkRenderPass renderPass, const VkPipeline pipeline)
 {
 	CreateCommandPool(device, physicalDecvice);
 
@@ -105,7 +105,7 @@ void CommandBuffer::CreateCommandBuffer(VkDevice& device, VkPhysicalDevice& phys
 	m_pipeline = pipeline;
 }
 
-void CommandBuffer::DestroyCommandBuffer(VkDevice& device)
+void CommandBuffer::DestroyCommandBuffer(const VkDevice& device) const
 {
 	vkDestroyCommandPool(device, m_commandPool, nullptr);
 }

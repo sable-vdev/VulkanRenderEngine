@@ -16,8 +16,8 @@ private:
 	const int WIDTH = 1280;
 	const int HEIGHT = 720;
 	const char* TITLE = "Hello Vulkan";
-	double m_lastDeltaTime;
-	float m_frameCount;
+	float m_lastDeltaTime = 0.0;
+	float m_frameCount = 0.0f;
 	GLFWwindow* m_window = nullptr;
 	VkInstance m_instance = nullptr;
 	VkSurfaceKHR m_surfaceKhr = nullptr;

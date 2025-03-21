@@ -1,11 +1,13 @@
 #include "SableRender.hpp"
 
+
+
 const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
 #ifdef NDEBUG
-const bool enableValidationLayers = false;
+const bool ENABLE_VALIDATION_LAYERS = false;
 #else
-const bool enableValidationLayers = true;
+const bool ENABLE_VALIDATION_LAYERS = true;
 #endif
 
 bool CheckValidationLayerSupport()
@@ -70,7 +72,6 @@ void SableRender::InitVulkan()
 	CreateImageViews();
 	CreateGraphicsPipeline();
 	CreateFramebuffer();
-	//CreateCommandPool();
 	CreateCommandBuffer();
 }
 
@@ -95,7 +96,7 @@ void SableRender::DrawFrame()
 
 void SableRender::CalculateFps()
 {
-	double deltaTime = glfwGetTime();
+	float deltaTime = glfwGetTime();
 	if (deltaTime - m_lastDeltaTime >= 1.0)
 	{
 		std::cout << m_frameCount << " (" << 1000.0f / m_frameCount << " ms)\n";
@@ -117,7 +118,7 @@ void SableRender::CleanUp()
 
 	m_sableLogicalDevice.DestroyLogicalDevice();
 
-	if (enableValidationLayers)
+	if (ENABLE_VALIDATION_LAYERS)
 	{
 		m_debugger.DestroyDebugUtilsMessengerEXT();
 	}
@@ -135,7 +136,7 @@ void SableRender::CleanUp()
 */
 void SableRender::CreateVulkanInstance()
 {
-	if (enableValidationLayers && !CheckValidationLayerSupport())
+	if (ENABLE_VALIDATION_LAYERS && !CheckValidationLayerSupport())
 	{
 		throw std::runtime_error("Validation layers requested, but not available!");
 	}
@@ -168,7 +169,7 @@ void SableRender::CreateVulkanInstance()
 
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 
-	if constexpr(enableValidationLayers)
+	if constexpr(ENABLE_VALIDATION_LAYERS)
 	{
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -193,7 +194,7 @@ void SableRender::CreateLogicalDevice()
 {
 	QueueFamilies family;
 	family = family.FindQueueFamilies(m_sablePhysicalDevice.vulkanAppPhysicalDevice, m_surfaceKhr);
-	m_sableLogicalDevice = LogicalDevice(family, m_sablePhysicalDevice.vulkanAppPhysicalDevice, enableValidationLayers, deviceExtensions, validationLayers);
+	m_sableLogicalDevice = LogicalDevice(family, m_sablePhysicalDevice.vulkanAppPhysicalDevice, ENABLE_VALIDATION_LAYERS, deviceExtensions, validationLayers);
 }
 
 std::vector<const char*> SableRender::GetRequiredExtensions()
@@ -203,7 +204,7 @@ std::vector<const char*> SableRender::GetRequiredExtensions()
 
 	std::vector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	if constexpr(enableValidationLayers)
+	if constexpr(ENABLE_VALIDATION_LAYERS)
 	{
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
@@ -213,7 +214,7 @@ std::vector<const char*> SableRender::GetRequiredExtensions()
 
 void SableRender::SetupDebugMessenger()
 {
-	if constexpr(!enableValidationLayers) return;
+	if constexpr(!ENABLE_VALIDATION_LAYERS) return;
 	VkDebugUtilsMessengerCreateInfoEXT createInfo{};
 	m_debugger = Debugger(m_instance, createInfo);
 }
