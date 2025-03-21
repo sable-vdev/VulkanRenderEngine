@@ -1,6 +1,6 @@
-#include "VulkanAppSwapChain.hpp"
+#include "SwapChain.hpp"
 
-void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vkpd, VkDevice& device, VkSurfaceKHR& surface)
+void SwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vkpd, VkDevice& device, VkSurfaceKHR& surface)
 {
 	SwapChainSupportDetails swapChainDetails = QuerySwapChainSupport(vkpd, surface);
 
@@ -26,7 +26,7 @@ void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vk
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	VulkanAppQueueFamilies families;
+	QueueFamilies families;
 	families = families.FindQueueFamilies(vkpd, surface);
 	
 	if (!families.graphicsFamily.has_value() || !families.presentFamily.has_value())
@@ -65,12 +65,12 @@ void VulkanAppSwapChain::CreateSwapChain(GLFWwindow* window, VkPhysicalDevice vk
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
 }
 
-void VulkanAppSwapChain::DestroySwapChain(VkDevice device)
+void SwapChain::DestroySwapChain(VkDevice device)
 {
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
-SwapChainSupportDetails VulkanAppSwapChain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+SwapChainSupportDetails SwapChain::QuerySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	SwapChainSupportDetails details;
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
@@ -96,7 +96,7 @@ SwapChainSupportDetails VulkanAppSwapChain::QuerySwapChainSupport(VkPhysicalDevi
 	return details;
 }
 
-VkSurfaceFormatKHR VulkanAppSwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	for (const auto& availableFormat : availableFormats)
 	{
@@ -109,7 +109,7 @@ VkSurfaceFormatKHR VulkanAppSwapChain::ChooseSwapSurfaceFormat(const std::vector
 	return availableFormats[0];
 }
 
-VkPresentModeKHR VulkanAppSwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
+VkPresentModeKHR SwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
 {
 	for (const auto& presentMode : presentModes)
 	{
@@ -122,7 +122,7 @@ VkPresentModeKHR VulkanAppSwapChain::ChooseSwapPresentMode(const std::vector<VkP
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D VulkanAppSwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, GLFWwindow* window)
+VkExtent2D SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, GLFWwindow* window)
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) return capabilities.currentExtent;
 	else

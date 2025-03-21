@@ -5,18 +5,18 @@
 #include <optional>
 #include <vector>
 
-struct VulkanAppQueueFamilies
+struct QueueFamilies
 {
 	std::optional<uint32_t> graphicsFamily;
 	std::optional<uint32_t> presentFamily;
-	bool IsComplete()
+	bool IsComplete() const
 	{
 		return graphicsFamily.has_value() && presentFamily.has_value();
 	}
 
-	VulkanAppQueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd, VkSurfaceKHR surface)
+	QueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd, VkSurfaceKHR surface)
 	{
-		VulkanAppQueueFamilies queueFamilies;
+		QueueFamilies queueFamilies;
 
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(vkpd, &queueFamilyCount, nullptr);
@@ -45,9 +45,9 @@ struct VulkanAppQueueFamilies
 		return queueFamilies;
 	}
 
-	VulkanAppQueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd)
+	QueueFamilies FindQueueFamilies(VkPhysicalDevice vkpd)
 	{
-		VulkanAppQueueFamilies queueFamilies;
+		QueueFamilies queueFamilies;
 
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(vkpd, &queueFamilyCount, nullptr);

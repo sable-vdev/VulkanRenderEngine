@@ -5,19 +5,18 @@
 #include <string>
 #include <fstream>
 
-class VulkanAppGraphicsPipeline
+class GraphicsPipeline
 {
 public:
 	VkRenderPass renderPass = nullptr;
+	VkPipeline pipeline = nullptr;
 private:
 	VkPipelineLayout m_pipelineLayout = nullptr;
-	VkPipeline m_pipeline = nullptr;
 public:
 	void DestroyGraphicsPipeline(VkDevice& device);
-	VulkanAppGraphicsPipeline() = default;
-	VulkanAppGraphicsPipeline(VkDevice& device, VkFormat swapChainImageFormat);
+	void CreateGraphicsPipeline(VkDevice& device, VkFormat swapChainImageFormat);
+	GraphicsPipeline() = default;
 private:
-	void CreateGraphicsPipeline(VkDevice& device);
 	void CreateRenderPass(VkDevice& device, VkFormat swapChainImageFormat);
 	VkShaderModule CreateShaderModule(VkDevice& device, const std::vector<char>& code);
 	inline std::vector<char> ReadFile(const std::string& filename)

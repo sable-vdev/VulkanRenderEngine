@@ -5,14 +5,14 @@
 #include <string>
 #include <map>
 #include <set>
-#include "VulkanAppSwapChain.hpp"
-#include "VulkanAppQueueFamilies.hpp"
+#include "SwapChain.hpp"
+#include "QueueFamilies.hpp"
 
 const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-class VulkanAppPhysicalDevice
+class PhysicalDevice
 {
 public:
 	VkPhysicalDevice vulkanAppPhysicalDevice;

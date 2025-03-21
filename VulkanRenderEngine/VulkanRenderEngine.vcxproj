@@ -16,6 +16,7 @@
     <ProjectGuid>{4a3b9536-99ea-41f5-80bc-805218db7f67}</ProjectGuid>
     <RootNamespace>VulkanRenderEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>SableRenderEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -25,7 +26,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -89,26 +90,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\VulkanAppDebugger.cpp" />
+    <ClCompile Include="src\CommandBuffer.cpp" />
+    <ClCompile Include="src\Debugger.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\VulkanApp.cpp" />
-    <ClCompile Include="src\VulkanAppPhysicalDevice.cpp" />
-    <ClCompile Include="src\VulkanAppLogicalDevice.cpp" />
-    <ClCompile Include="src\VulkanAppSwapChain.cpp" />
-    <ClCompile Include="src\VulkanAppImageView.cpp" />
-    <ClCompile Include="src\VulkanAppGraphicsPipeline.cpp" />
-    <ClCompile Include="src\VulkanAppFramebuffer.cpp" />
+    <ClCompile Include="src\SableRender.cpp" />
+    <ClCompile Include="src\PhysicalDevice.cpp" />
+    <ClCompile Include="src\LogicalDevice.cpp" />
+    <ClCompile Include="src\SwapChain.cpp" />
+    <ClCompile Include="src\ImageView.cpp" />
+    <ClCompile Include="src\GraphicsPipeline.cpp" />
+    <ClCompile Include="src\Framebuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\VulkanAppDebugger.hpp" />
-    <ClInclude Include="src\VulkanApp.hpp" />
-    <ClInclude Include="src\VulkanAppPhysicalDevice.hpp" />
-    <ClInclude Include="src\VulkanAppQueueFamilies.hpp" />
-    <ClInclude Include="src\VulkanAppSwapChain.hpp" />
-    <ClInclude Include="src\VulkanAppLogicalDevice.hpp" />
-    <ClInclude Include="src\VulkanAppImageView.hpp" />
-    <ClInclude Include="src\VulkanAppGraphicsPipeline.hpp" />
-    <ClInclude Include="src\VulkanAppFramebuffer.hpp" />
+    <ClInclude Include="src\CommandBuffer.hpp" />
+    <ClInclude Include="src\Debugger.hpp" />
+    <ClInclude Include="src\SableRender.hpp" />
+    <ClInclude Include="src\PhysicalDevice.hpp" />
+    <ClInclude Include="src\QueueFamilies.hpp" />
+    <ClInclude Include="src\SwapChain.hpp" />
+    <ClInclude Include="src\LogicalDevice.hpp" />
+    <ClInclude Include="src\ImageView.hpp" />
+    <ClInclude Include="src\GraphicsPipeline.hpp" />
+    <ClInclude Include="src\Framebuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shadersrc\compile.bat" />

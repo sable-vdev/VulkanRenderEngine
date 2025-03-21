@@ -1,5 +1,5 @@
 #pragma once
-#include "VulkanAppQueueFamilies.hpp"
+#include "QueueFamilies.hpp"
 #include <stdexcept>
 #include <vector>
 #include <limits>
@@ -13,7 +13,7 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentMode;
 };
 
-class VulkanAppSwapChain
+class SwapChain
 {
 public:
 	VkSwapchainKHR swapChain = nullptr;

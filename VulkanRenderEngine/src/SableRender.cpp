@@ -1,4 +1,4 @@
-#include "VulkanApp.hpp"
+#include "SableRender.hpp"
 
 const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
@@ -34,10 +34,10 @@ bool CheckValidationLayerSupport()
 	return true;
 }
 
-/*
+/*	
 * Vulkanapp init function handling the app
 */
-void VulkanApp::Run()
+void SableRender::Run()
 {
 	InitGlfw();
 	InitVulkan();
@@ -47,7 +47,7 @@ void VulkanApp::Run()
 /*
 * Initializing GLFW and creating the window
 */
-void VulkanApp::InitGlfw()
+void SableRender::InitGlfw()
 {
 	glfwInit();
 	
@@ -59,53 +59,63 @@ void VulkanApp::InitGlfw()
 /*
 * Initializing the Vulkan Instance
 */
-void VulkanApp::InitVulkan()
+void SableRender::InitVulkan()
 {
 	CreateVulkanInstance();
 	SetupDebugMessenger();
 	CreateSurfaceGlfw();
-	m_vulkanAppPhysicalDevice.GetPhysicalDevice(m_instance, m_surfaceKhr);
+	CreatePhysicalDevice();
 	CreateLogicalDevice();
 	CreateSwapChain();
-	m_vulkanAppImageView.CreateImageViews(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppSwapChain);
-	m_vulkanAppGraphicsPipeline = VulkanAppGraphicsPipeline(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppSwapChain.swapChainImageFormat);
+	CreateImageViews();
+	CreateGraphicsPipeline();
 	CreateFramebuffer();
+	//CreateCommandPool();
+	CreateCommandBuffer();
 }
 
 /*
 * Main loop of the application for rendering and window
 */
-void VulkanApp::MainLoop() const
+void SableRender::MainLoop()
 {
-	float frameCount = 0.0f;
-	double lastDeltaTime = glfwGetTime();
-
-
+	m_frameCount = 0.0f;
+	m_lastDeltaTime = glfwGetTime();
 	while (!glfwWindowShouldClose(m_window))
 	{
-		double deltaTime = glfwGetTime();
-		if (deltaTime - lastDeltaTime >= 1.0)
-		{
-			std::cout << frameCount << " (" << 1000.0f / frameCount << " ms)\n";
-			frameCount = 0;
-			lastDeltaTime = deltaTime;
-		}
-		frameCount++;
-
+		CalculateFps();
 		glfwPollEvents();
+		DrawFrame();
 	}
+}
+void SableRender::DrawFrame()
+{
+
+}
+
+void SableRender::CalculateFps()
+{
+	double deltaTime = glfwGetTime();
+	if (deltaTime - m_lastDeltaTime >= 1.0)
+	{
+		std::cout << m_frameCount << " (" << 1000.0f / m_frameCount << " ms)\n";
+		m_frameCount = 0;
+		m_lastDeltaTime = deltaTime;
+	}
+	m_frameCount++;
 }
 /*
 * Destroy every resource and making up the space after the app has been closed
 */
-void VulkanApp::CleanUp()
+void SableRender::CleanUp()
 {
-	m_vulkanAppGraphicsPipeline.DestroyGraphicsPipeline(m_vulkanAppLogicalDevice.vulkanDevice);
-	m_vulkanAppImageView.DestroyImageViews(m_vulkanAppLogicalDevice.vulkanDevice);
-	m_vulkanAppSwapChain.DestroySwapChain(m_vulkanAppLogicalDevice.vulkanDevice);
-	m_vulkanAppFramebuffer.DestroyFramebuffers(m_vulkanAppLogicalDevice.vulkanDevice);
+	m_sableCommandBuffer.DestroyCommandBuffer(m_sableLogicalDevice.vulkanDevice);
+	m_sableGraphicsPipeline.DestroyGraphicsPipeline(m_sableLogicalDevice.vulkanDevice);
+	m_sableImageView.DestroyImageViews(m_sableLogicalDevice.vulkanDevice);
+	m_sableSwapChain.DestroySwapChain(m_sableLogicalDevice.vulkanDevice);
+	m_sableFramebuffer.DestroyFramebuffers(m_sableLogicalDevice.vulkanDevice);
 
-	m_vulkanAppLogicalDevice.DestroyLogicalDevice();
+	m_sableLogicalDevice.DestroyLogicalDevice();
 
 	if (enableValidationLayers)
 	{
@@ -123,7 +133,7 @@ void VulkanApp::CleanUp()
 /*
 * Creating the Vulkan Instance
 */
-void VulkanApp::CreateVulkanInstance()
+void SableRender::CreateVulkanInstance()
 {
 	if (enableValidationLayers && !CheckValidationLayerSupport())
 	{
@@ -179,14 +189,14 @@ void VulkanApp::CreateVulkanInstance()
 	}	
 }
 
-void VulkanApp::CreateLogicalDevice()
+void SableRender::CreateLogicalDevice()
 {
-	VulkanAppQueueFamilies family;
-	family = family.FindQueueFamilies(m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, m_surfaceKhr);
-	m_vulkanAppLogicalDevice = VulkanAppLogicalDevice(family, m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, enableValidationLayers, deviceExtensions, validationLayers);
+	QueueFamilies family;
+	family = family.FindQueueFamilies(m_sablePhysicalDevice.vulkanAppPhysicalDevice, m_surfaceKhr);
+	m_sableLogicalDevice = LogicalDevice(family, m_sablePhysicalDevice.vulkanAppPhysicalDevice, enableValidationLayers, deviceExtensions, validationLayers);
 }
 
-std::vector<const char*> VulkanApp::GetRequiredExtensions()
+std::vector<const char*> SableRender::GetRequiredExtensions()
 {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -201,14 +211,14 @@ std::vector<const char*> VulkanApp::GetRequiredExtensions()
 	return extensions;
 }
 
-void VulkanApp::SetupDebugMessenger()
+void SableRender::SetupDebugMessenger()
 {
 	if constexpr(!enableValidationLayers) return;
 	VkDebugUtilsMessengerCreateInfoEXT createInfo{};
-	m_debugger = VulkanAppDebugger(m_instance, createInfo);
+	m_debugger = Debugger(m_instance, createInfo);
 }
 
-void VulkanApp::CreateSurfaceGlfw()
+void SableRender::CreateSurfaceGlfw()
 {
 	if (glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surfaceKhr) != VK_SUCCESS)
 	{
@@ -216,12 +226,32 @@ void VulkanApp::CreateSurfaceGlfw()
 	}
 }
 
-void VulkanApp::CreateSwapChain()
+void SableRender::CreatePhysicalDevice()
 {
-	m_vulkanAppSwapChain.CreateSwapChain(m_window, m_vulkanAppPhysicalDevice.vulkanAppPhysicalDevice, m_vulkanAppLogicalDevice.vulkanDevice, m_surfaceKhr);
+	m_sablePhysicalDevice.GetPhysicalDevice(m_instance, m_surfaceKhr);
 }
 
-void VulkanApp::CreateFramebuffer()
+void SableRender::CreateSwapChain()
 {
-	m_vulkanAppFramebuffer.CreateFramebuffers(m_vulkanAppLogicalDevice.vulkanDevice, m_vulkanAppImageView.imageViews, m_vulkanAppSwapChain.swapChainExtent, m_vulkanAppGraphicsPipeline.renderPass);
+	m_sableSwapChain.CreateSwapChain(m_window, m_sablePhysicalDevice.vulkanAppPhysicalDevice, m_sableLogicalDevice.vulkanDevice, m_surfaceKhr);
+}
+
+void SableRender::CreateImageViews()
+{
+	m_sableImageView.CreateImageViews(m_sableLogicalDevice.vulkanDevice, m_sableSwapChain);
+}
+
+void SableRender::CreateGraphicsPipeline()
+{
+	m_sableGraphicsPipeline.CreateGraphicsPipeline(m_sableLogicalDevice.vulkanDevice, m_sableSwapChain.swapChainImageFormat);
+}
+
+void SableRender::CreateFramebuffer()
+{
+	m_sableFramebuffer.CreateFramebuffers(m_sableLogicalDevice.vulkanDevice, m_sableImageView.imageViews, m_sableSwapChain.swapChainExtent, m_sableGraphicsPipeline.renderPass);
+}
+void SableRender::CreateCommandBuffer()
+{
+	m_sableCommandBuffer.CreateCommandBuffer(m_sableLogicalDevice.vulkanDevice, m_sablePhysicalDevice.vulkanAppPhysicalDevice,
+		m_sableSwapChain.swapChainExtent, m_sableFramebuffer.frameBuffers, m_sableGraphicsPipeline.renderPass, m_sableGraphicsPipeline.pipeline);
 }

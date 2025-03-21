@@ -4,10 +4,10 @@
 #include <vector>
 #include <stdexcept>
 
-class VulkanAppFramebuffer
+class Framebuffer
 {
-private:
-	std::vector<VkFramebuffer> m_frameBuffers;
+public:
+	std::vector<VkFramebuffer> frameBuffers;
 public:
 	void CreateFramebuffers(VkDevice& device, std::vector<VkImageView>& imageViews, VkExtent2D swapChainExtent, VkRenderPass& renderPass);
 	void DestroyFramebuffers(VkDevice& device);

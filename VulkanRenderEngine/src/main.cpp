@@ -1,11 +1,11 @@
-#include "VulkanApp.hpp"
+#include "SableRender.hpp"
 #include <cstdlib>
 
 int main()
 {
 	try
 	{
-		VulkanApp window;
+		SableRender window;
 		window.Run();
 	}
 	catch (const std::exception &e)

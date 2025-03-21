@@ -1,20 +1,16 @@
-#include "VulkanAppGraphicsPipeline.hpp"
+#include "GraphicsPipeline.hpp"
 
-void VulkanAppGraphicsPipeline::DestroyGraphicsPipeline(VkDevice& device)
+void GraphicsPipeline::DestroyGraphicsPipeline(VkDevice& device)
 {
-	vkDestroyPipeline(device, m_pipeline, nullptr);
+	vkDestroyPipeline(device, pipeline, nullptr);
 	vkDestroyPipelineLayout(device, m_pipelineLayout, nullptr);
 	vkDestroyRenderPass(device, renderPass, nullptr);
 }
 
-VulkanAppGraphicsPipeline::VulkanAppGraphicsPipeline(VkDevice& device, VkFormat swapChainImageFormat)
+void GraphicsPipeline::CreateGraphicsPipeline(VkDevice& device, VkFormat swapChainImageFormat)
 {
 	CreateRenderPass(device, swapChainImageFormat);
-	CreateGraphicsPipeline(device);
-}
 
-void VulkanAppGraphicsPipeline::CreateGraphicsPipeline(VkDevice& device)
-{
 	auto vertShaderCode = ReadFile("shadersrc/vert.spv");
 	auto fragShaderCode = ReadFile("shadersrc/frag.spv");
 
@@ -168,7 +164,7 @@ void VulkanAppGraphicsPipeline::CreateGraphicsPipeline(VkDevice& device)
 		.basePipelineIndex = -1
 	};
 
-	if (vkCreateGraphicsPipelines(device, nullptr, 1, &graphicsPipelineCreateInfo, nullptr, &m_pipeline) != VK_SUCCESS)
+	if (vkCreateGraphicsPipelines(device, nullptr, 1, &graphicsPipelineCreateInfo, nullptr, &pipeline) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create graphics pipeline");
 	}
@@ -177,7 +173,7 @@ void VulkanAppGraphicsPipeline::CreateGraphicsPipeline(VkDevice& device)
 	vkDestroyShaderModule(device, fragmentModule, nullptr);
 }
 
-void VulkanAppGraphicsPipeline::CreateRenderPass(VkDevice& device, VkFormat swapChainImageFormat)
+void GraphicsPipeline::CreateRenderPass(VkDevice& device, VkFormat swapChainImageFormat)
 {
 	VkAttachmentDescription colorAttachment = {
 		.flags = 0,
@@ -227,7 +223,7 @@ void VulkanAppGraphicsPipeline::CreateRenderPass(VkDevice& device, VkFormat swap
 	}
 }
 
-VkShaderModule VulkanAppGraphicsPipeline::CreateShaderModule(VkDevice& device, const std::vector<char>& code)
+VkShaderModule GraphicsPipeline::CreateShaderModule(VkDevice& device, const std::vector<char>& code)
 {
 	const VkShaderModuleCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,

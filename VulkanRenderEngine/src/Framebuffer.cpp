@@ -1,8 +1,8 @@
-#include "VulkanAppFramebuffer.hpp"
+#include "Framebuffer.hpp"
 
-void VulkanAppFramebuffer::CreateFramebuffers(VkDevice& device, std::vector<VkImageView>& imageViews, VkExtent2D swapChainExtent, VkRenderPass& renderPass)
+void Framebuffer::CreateFramebuffers(VkDevice& device, std::vector<VkImageView>& imageViews, VkExtent2D swapChainExtent, VkRenderPass& renderPass)
 {
-	m_frameBuffers.reserve(imageViews.size());
+	frameBuffers.reserve(imageViews.size());
 
 	for (auto i = 0; i < imageViews.size(); i++)
 	{
@@ -24,16 +24,16 @@ void VulkanAppFramebuffer::CreateFramebuffers(VkDevice& device, std::vector<VkIm
 
 		VkFramebuffer framebuffer;
 
-		if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &m_frameBuffers.emplace_back(framebuffer)) != VK_SUCCESS)
+		if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &frameBuffers.emplace_back(framebuffer)) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create framebuffer");
 		}
 	}
 }
 
-void VulkanAppFramebuffer::DestroyFramebuffers(VkDevice& device)
+void Framebuffer::DestroyFramebuffers(VkDevice& device)
 {
-	for (const auto buffer : m_frameBuffers)
+	for (const auto buffer : frameBuffers)
 	{
 		vkDestroyFramebuffer(device, buffer, nullptr);
 	}

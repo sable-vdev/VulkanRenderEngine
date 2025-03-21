@@ -2,15 +2,15 @@
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include <stdexcept>
-#include "VulkanAppSwapChain.hpp"
+#include "SwapChain.hpp"
 #include <vector>
 
-class VulkanAppImageView
+class ImageView
 {
 public:
 	std::vector<VkImageView> imageViews;
 public:
-	void CreateImageViews(const VkDevice& device, const VulkanAppSwapChain& swapChain);
+	void CreateImageViews(const VkDevice& device, const SwapChain& swapChain);
 	void DestroyImageViews(const VkDevice& device) const;
 };
 

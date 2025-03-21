@@ -1,6 +1,6 @@
-#include "VulkanAppLogicalDevice.hpp"
+#include "LogicalDevice.hpp"
 
-VulkanAppLogicalDevice::VulkanAppLogicalDevice(VulkanAppQueueFamilies family, VkPhysicalDevice physicalDevice, bool enableValidationLayers, const std::vector<const char*>& deviceExtensions, const std::vector<const char*>& validationLayers)
+LogicalDevice::LogicalDevice(QueueFamilies family, VkPhysicalDevice physicalDevice, bool enableValidationLayers, const std::vector<const char*>& deviceExtensions, const std::vector<const char*>& validationLayers)
 {
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos{};
@@ -55,7 +55,7 @@ VulkanAppLogicalDevice::VulkanAppLogicalDevice(VulkanAppQueueFamilies family, Vk
 	vkGetDeviceQueue(vulkanDevice, family.presentFamily.value(), 0, &mPresentQueue);
 }
 
-void VulkanAppLogicalDevice::DestroyLogicalDevice() const
+void LogicalDevice::DestroyLogicalDevice() const
 {
 	vkDestroyDevice(vulkanDevice, nullptr);
 }

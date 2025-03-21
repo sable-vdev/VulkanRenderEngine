@@ -11,7 +11,7 @@ enum LogLevel : int8_t
 	ERROR
 };
 
-class VulkanAppDebugger
+class Debugger
 {
 private:
 	VkDebugUtilsMessengerEXT mDebugMessenger = nullptr;
@@ -22,6 +22,6 @@ private:
 public:
 	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator = nullptr);
-	VulkanAppDebugger(const VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT createInfo);
-	VulkanAppDebugger() = default;
+	Debugger(const VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT createInfo);
+	Debugger() = default;
 };

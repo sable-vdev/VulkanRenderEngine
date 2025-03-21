@@ -1,6 +1,6 @@
-#include "VulkanAppPhysicalDevice.hpp"
+#include "PhysicalDevice.hpp"
 
-void VulkanAppPhysicalDevice::GetPhysicalDevice(const VkInstance instance, const VkSurfaceKHR surface)
+void PhysicalDevice::GetPhysicalDevice(const VkInstance instance, const VkSurfaceKHR surface)
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -17,18 +17,18 @@ void VulkanAppPhysicalDevice::GetPhysicalDevice(const VkInstance instance, const
 	vulkanAppPhysicalDevice = physicalDevice;
 }
 
-VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface)
+VkPhysicalDevice PhysicalDevice::GetBestGPU(const std::vector<VkPhysicalDevice>& devices, VkSurfaceKHR surface)
 {
 	std::multimap<int, VkPhysicalDevice> vulkanDevices;
 
 		
 	for (const auto& device : devices)
 	{
-		VulkanAppQueueFamilies family;
+		QueueFamilies family;
 		family = family.FindQueueFamilies(device, surface);
 		if (CheckDeviceExtensionSupport(device))
 		{
-			VulkanAppSwapChain swapchain;
+			SwapChain swapchain;
 			SwapChainSupportDetails swapChainDetails = swapchain.QuerySwapChainSupport(device, surface);
 			if (!swapChainDetails.formats.empty() && !swapChainDetails.presentMode.empty())
 			{
@@ -45,7 +45,7 @@ VkPhysicalDevice VulkanAppPhysicalDevice::GetBestGPU(const std::vector<VkPhysica
 	throw std::runtime_error("Failed to find suitable GPU");
 }
 
-bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
+bool PhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
 {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(vkpd, nullptr, &extensionCount, nullptr);
@@ -63,7 +63,7 @@ bool VulkanAppPhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice vkpd)
 	return requiredExtensions.empty();
 }
 
-std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice vkpd)
+std::string PhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice vkpd)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	vkGetPhysicalDeviceProperties(vkpd, &deviceProperties);
@@ -94,7 +94,7 @@ std::string VulkanAppPhysicalDevice::GetVulkanDeviceInfo(VkPhysicalDevice vkpd)
 	return deviceName + ", " + deviceType;
 }
 
-int VulkanAppPhysicalDevice::CalculateDeviceScore(VkPhysicalDevice vkpd)
+int PhysicalDevice::CalculateDeviceScore(VkPhysicalDevice vkpd)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	vkGetPhysicalDeviceProperties(vkpd, &deviceProperties);

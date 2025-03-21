@@ -1,6 +1,6 @@
-#include "VulkanAppDebugger.hpp"
+#include "Debugger.hpp"
 
-void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
+void Debugger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
 {
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != nullptr)
@@ -9,7 +9,7 @@ void VulkanAppDebugger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallback
 	}
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanAppDebugger::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
+VKAPI_ATTR VkBool32 VKAPI_CALL Debugger::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 	constexpr LogLevel log = WARNING;
 	switch (messageSeverity)
@@ -36,7 +36,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanAppDebugger::DebugCallback(VkDebugUtilsMess
 	return VK_FALSE;
 }
 
-VkResult VulkanAppDebugger::CreateDebugUtilsMessengerExt(const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+VkResult Debugger::CreateDebugUtilsMessengerExt(const VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 	const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
 	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -47,7 +47,7 @@ VkResult VulkanAppDebugger::CreateDebugUtilsMessengerExt(const VkInstance instan
 	else return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
-void VulkanAppDebugger::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+void Debugger::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 {
 	createInfo = {
 		.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
@@ -62,7 +62,7 @@ void VulkanAppDebugger::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCr
 	};
 }
 
-VulkanAppDebugger::VulkanAppDebugger(const VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT createInfo)
+Debugger::Debugger(const VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT createInfo)
 {
 	mInstance = instance;
 	PopulateDebugMessengerCreateInfo(createInfo);

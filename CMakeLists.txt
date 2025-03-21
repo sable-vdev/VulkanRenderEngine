@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Specify the main source directory
-set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/VulkanRenderEngine")
+set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/SableRenderEngine")
 
 # Find Vulkan
 find_package(Vulkan REQUIRED)
@@ -31,10 +31,10 @@ include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${SOURCE_DIR})
 
 # Create the executable
-add_executable(VulkanRenderEngine ${SOURCES})
+add_executable(SableRenderEngine ${SOURCES})
 
 # Link libraries
-target_link_libraries(VulkanRenderEngine PRIVATE Vulkan::Vulkan glfw)
+target_link_libraries(SableRenderEngine PRIVATE Vulkan::Vulkan glfw)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
